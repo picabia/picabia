@@ -23,6 +23,7 @@ class Frame {
     this._frameId = null;
     this._paused = false;
 
+    this._elapsed = 0;
     this._lastTs = null;
   }
 
@@ -50,18 +51,21 @@ class Frame {
     this._lastTs = timestamp;
     if (delta <= maxDelta || this._config.freeze) {
       delta = this._config.freeze ? Math.min(delta, maxDelta) : delta;
-      this._emitter.emit('update', delta, timestamp);
+      this._elapsed += delta;
+      this._emitter.emit('update', delta, this._elapsed);
     } else {
       const updates = Math.floor(delta / maxDelta);
       const remainder = delta / maxDelta;
       for (let ix = 0; ix < updates; ix++) {
-        this._emitter.emit('update', maxDelta, this._lastTs + maxDelta * ix);
+        this._elapsed += maxDelta;
+        this._emitter.emit('update', maxDelta, this._elapsed);
       }
       if (remainder) {
-        this._emitter.emit('update', remainder, timestamp);
+        this._elapsed += remainder;
+        this._emitter.emit('update', remainder, this._elapsed);
       }
     }
-    this._emitter.emit('render', delta, timestamp);
+    this._emitter.emit('render', delta, this._elapsed);
   }
 
   _animationFrame () {

@@ -4,17 +4,18 @@ const throttle = (func, limit) => {
   return function () {
     const context = this;
     const args = arguments;
-    if (!lastRan) {
+    const timestamp = args[1];
+    if (!lastRan && timestamp) {
       func.apply(context, args);
-      lastRan = Date.now();
+      lastRan = timestamp;
     } else {
       clearTimeout(lastFunc);
       lastFunc = setTimeout(function () {
-        if ((Date.now() - lastRan) >= limit) {
+        if ((timestamp - lastRan) >= limit) {
           func.apply(context, args);
-          lastRan = Date.now();
+          lastRan = timestamp;
         }
-      }, limit - (Date.now() - lastRan));
+      }, limit - (timestamp - lastRan));
     }
   };
 };
