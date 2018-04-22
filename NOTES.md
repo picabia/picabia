@@ -2,6 +2,7 @@
 maths
 https://github.com/gamtiq/numgen
 http://algebra.js.org/
+https://www.npmjs.com/package/angles
 
 tinycolor
 https://github.com/bgrins/TinyColor

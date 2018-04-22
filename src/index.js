@@ -11,12 +11,4 @@ export { Viewport } from './render/viewport';
 
 export { Time };
 
-export { radiansToVector } from './maths/geometry';
-
-// export { Fps } from './frame';
-// export { Interactive } from './interactive';
-// export { Loader } from './loader';
-// export { State } from './state';
-// export { Surface } from './surface';
-// export { Canvas } from './canvas';
-// export { Canvas } from './canvas';
+export { Geometry } from './maths/geometry';
