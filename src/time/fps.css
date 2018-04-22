@@ -1,0 +1,10 @@
+#picabia-fps {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  font-size: 12px;
+  padding: 0px 5px;
+  background: rgba(0,0,0,0.3);
+  line-height: 1.4;
+  z-index: 1000;
+}
