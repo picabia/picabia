@@ -20,11 +20,4 @@ var webpackConfig = {
   plugins: []
 };
 
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-
-webpackConfig.plugins.push(new CopyWebpackPlugin([
-  // { from: 'src/styles', to: 'styles' },
-  // { from: 'src/assets', to: 'assets' }
-]));
-
 module.exports = webpackConfig;

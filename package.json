@@ -17,7 +17,9 @@
     "lint-fix": "eslint --fix src/ lib/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {},
+  "dependencies": {
+    "fontfaceobserver": "^2.0.13"
+  },
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",

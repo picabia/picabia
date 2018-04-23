@@ -31,6 +31,18 @@ class Viewport {
     this._zoom = zoom;
   }
 
+  getShape () {
+    const halfWidth = this._size.w / (2 * this._scale * this._zoom);
+    const halfHeight = this._size.h / (2 * this._scale * this._zoom);
+    const shape = [
+      { x: this._pos.x - halfWidth, y: this._pos.y - halfHeight },
+      { x: this._pos.x + halfWidth, y: this._pos.y - halfHeight },
+      { x: this._pos.x + halfWidth, y: this._pos.y + halfHeight },
+      { x: this._pos.x - halfWidth, y: this._pos.y + halfHeight }
+    ];
+    return shape.map(point => Geometry.rotateVector(point, -this._angle, this._pos));
+  }
+
   scaleValue (val) {
     return Math.round(this._scale * this._zoom * val);
   }
@@ -46,28 +58,21 @@ class Viewport {
     };
   }
 
-  _scalePoint (point, origin) {
-    const rotated = Geometry.rotateVector(point, this._angle, this._pos);
-    return {
-      x: Math.round(this._scale * this._zoom * rotated.x - origin.x),
-      y: Math.round(this._scale * this._zoom * rotated.y - origin.y)
-    };
-  }
-
   scalePoint (point) {
     const origin = {
-      x: this._pos.x - this._size.w / 2,
-      y: this._pos.y - this._size.h / 2
+      x: this._pos.x - this._size.w / (2 * this._scale * this._zoom),
+      y: this._pos.y - this._size.h / (2 * this._scale * this._zoom)
     };
-    return this._scalePoint(point, origin);
+    const rotated = Geometry.rotateVector(point, this._angle, this._pos);
+    const scaled = {
+      x: Math.round(this._scale * this._zoom * (rotated.x - origin.x)),
+      y: Math.round(this._scale * this._zoom * (rotated.y - origin.y))
+    };
+    return scaled;
   }
 
   scalePoints (points) {
-    const origin = {
-      x: this._pos.x - this._size.w / 2,
-      y: this._pos.y - this._size.h / 2
-    };
-    return points.map((point) => this.scalePoint(point, origin));
+    return points.map((point) => this.scalePoint(point));
   }
 }
 

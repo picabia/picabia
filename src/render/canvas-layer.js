@@ -81,6 +81,18 @@ class CanvasLayer {
 
   // -- drawing
 
+  setFillStyle (style) {
+    this.ctx.fillStyle = style;
+  };
+
+  setStrokeWidth (width) {
+    this.ctx.lineWidth = width;
+  };
+
+  setStrokeStyle (style) {
+    this.ctx.strokeStyle = style;
+  };
+
   clear () {
     this.ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
   }
@@ -101,9 +113,9 @@ class CanvasLayer {
     this.ctx.fill();
   }
 
-  setFillStyle (style) {
-    this.ctx.fillStyle = style;
-  };
+  stroke () {
+    this.ctx.stroke();
+  }
 
   fillRect (x, y, w, h) {
     const pos = this.viewport.scalePoint({
