@@ -17,8 +17,8 @@ class CanvasLayer {
     this._views = [];
     this._viewIndex = 0;
 
-    this.size.w = /* size.w ? viewport.scaleValue(size.w) : */ canvas.width;
-    this.size.h = /* size.h ? viewport.scaleValue(size.h) : */ canvas.height;
+    this.size.w = canvas.width;
+    this.size.h = canvas.height;
 
     this._element = document.createElement('canvas');
     this._element.classList.add(CLASS_NAME);
@@ -37,12 +37,6 @@ class CanvasLayer {
 
   // -- api
 
-  // getDrawingRect () {
-  //   return {
-  //     data: this._element.toDataURL()
-  //   };
-  // }
-
   addView (view, zIndex) {
     zIndex = zIndex || 0;
     const index = this._viewIndex++;
@@ -50,33 +44,45 @@ class CanvasLayer {
     this._views.sort((a, b) => a.zIndex - b.zIndex || a.index - b.index);
   }
 
-  clear () {
-    this.ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
-  }
-
   resize () {
-    this.size.w = /* size.w ? viewport.scaleValue(size.w) : */ this._canvas.width;
-    this.size.h = /* size.h ? viewport.scaleValue(size.h) : */ this._canvas.height;
-    let size = this.size;
+    this.size.w = this._canvas.width;
+    this.size.h = this._canvas.height;
     let position = this.position || {x: 0, y: 0};
     let zIndex = this.zIndex;
-    this._element.width = size.w;
-    this._element.height = size.h;
+    this._element.width = this.size.w;
+    this._element.height = this.size.h;
     this._element.style.position = ABSOLUTE;
     this._element.style.left = position.x + 'px';
     this._element.style.top = position.y + 'px';
-    // this._element.style.left = this.viewport.scaleValue(position.x) + 'px';
-    // this._element.style.top = this.viewport.scaleValue(position.y) + 'px';
 
     if (zIndex) {
       this._element.style.zIndex = zIndex;
+    }
+
+    for (var ix = 0; ix < this._views.length; ix++) {
+      if (this._views[ix].view.resize) {
+        this._views[ix].view.resize();
+      }
     }
   }
 
   render (delta, timestamp) {
     for (var ix = 0; ix < this._views.length; ix++) {
-      this._views[ix].view.render(this, delta, timestamp);
+      if (this._views[ix].view.render) {
+        this._views[ix].view.render(this, delta, timestamp);
+      }
     }
+  }
+
+  destroy () {
+    this._canvas.purgeLayer(this);
+    this._element.remove();
+  }
+
+  // -- drawing
+
+  clear () {
+    this.ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
   }
 
   beginPath () {
@@ -109,11 +115,6 @@ class CanvasLayer {
       h
     });
     this.ctx.fillRect(pos.x, pos.y, size.w, size.h);
-  }
-
-  destroy () {
-    this._canvas.purgeLayer(this);
-    this._element.remove();
   }
 }
 

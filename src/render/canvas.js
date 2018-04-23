@@ -1,3 +1,4 @@
+import { Emitter } from '../core/emitter';
 import { CanvasLayer } from './canvas-layer';
 
 const MODE_CONTAIN = 'contain';
@@ -24,12 +25,14 @@ class Canvas {
     this.mode = config.mode || Canvas.MODE_CONTAIN;
     this.maxPixels = config.maxPixels || 800 * 600;
 
+    this._emitter = new Emitter();
+    Emitter.mixin(this, this._emitter);
+
     this.pixelRatio = null;
     this.width = null;
     this.height = null;
     this.scale = null;
     this.transform = null;
-    this.center = null;
 
     if (!this.mode) {
       this.mode = VALID_MODES[0];
@@ -178,11 +181,12 @@ class Canvas {
     this.width = width;
     this.height = height;
     this.transform = transform;
-    // this.center = {x: Math.round(max.x / 2), y: Math.round(max.y / 2)};
 
     for (var ix = 0; ix < this._layers.length; ix++) {
       this._layers[ix].resize();
     }
+
+    this._emitter.emit('resize');
   }
 
   appendChild (node) {

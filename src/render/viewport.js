@@ -6,6 +6,7 @@ class Viewport {
     this._size = size || { w: 0, h: 0 };
     this._angle = angle || 0;
     this._scale = 1;
+    this._zoom = 1;
   }
 
   // -- public
@@ -26,26 +27,30 @@ class Viewport {
     this._scale = scale;
   }
 
+  setZoom (zoom) {
+    this._zoom = zoom;
+  }
+
   scaleValue (val) {
-    return Math.round(this._scale * val);
+    return Math.round(this._scale * this._zoom * val);
   }
 
   scaleArray (arr) {
-    return arr.map((val) => Math.round(this._scale * val));
+    return arr.map((val) => Math.round(this._scale * this._zoom * val));
   }
 
   scaleSize (size) {
     return {
-      w: Math.round(this._scale * (size.w + 1)),
-      h: Math.round(this._scale * (size.h + 1))
+      w: Math.round(this._scale * this._zoom * size.w),
+      h: Math.round(this._scale * this._zoom * size.h)
     };
   }
 
   _scalePoint (point, origin) {
     const rotated = Geometry.rotateVector(point, this._angle, this._pos);
     return {
-      x: Math.round(this._scale * (rotated.x - origin.x)),
-      y: Math.round(this._scale * (rotated.y - origin.y))
+      x: Math.round(this._scale * this._zoom * rotated.x - origin.x),
+      y: Math.round(this._scale * this._zoom * rotated.y - origin.y)
     };
   }
 
