@@ -1,4 +1,4 @@
-import { Emitter } from '@picabia/emitter';
+import { Emitter } from '../core/emitter';
 
 class Interactive {
   constructor (surface, collisionFn, cursorStyle, cursorFn) {
