@@ -44,7 +44,7 @@ class KeyboardInput {
       onKeys.push(key);
       const groupControl = this._getGroupControl(group);
       if (groupControl) {
-        this._emitter.emit(group + ':' + this._maps[group][groupControl]);
+        this._emitter.emit('control', group + ':' + this._maps[group][groupControl]);
       }
     }
   }
@@ -55,11 +55,11 @@ class KeyboardInput {
       const index = onKeys.indexOf(key);
       onKeys.splice(index, 1);
       if (!onKeys.length) {
-        return this._emitter.emit(group + ':' + this._idle[group]);
+        return this._emitter.emit('control', group + ':' + this._idle[group]);
       }
       const groupControl = this._getGroupControl(group);
       if (groupControl) {
-        this._emitter.emit(group + ':' + this._maps[group][groupControl]);
+        this._emitter.emit('control', group + ':' + this._maps[group][groupControl]);
       }
     }
   }
