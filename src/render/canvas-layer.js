@@ -1,35 +1,34 @@
+const CANVAS = 'canvas';
 const ABSOLUTE = 'absolute';
 const CLASS_NAME = 'x-canvas-layer';
+const DATA_NAME = 'data-x-layer';
+const PX = 'px';
 
-const EXPOSED_CANVAS_METHODS = ['newLayer', 'newVirtualLayer', 'purgeLayer'];
-const EXPOSED_CANVAS_PROPS = ['surface', 'pixelRatio', 'scale', 'transform', 'center', 'offset', 'min', 'max'];
+const EXPOSED_CANVAS_METHODS = ['addLayer', 'addVirtualLayer', 'removeLayer'];
 
 class CanvasLayer {
   constructor (canvas, name, size, position, zIndex, viewport) {
     this._canvas = canvas;
 
-    this.name = name;
-    this.size = size = size || {};
-    this.position = position;
-    this.zIndex = zIndex;
-    this.viewport = viewport;
+    this._name = name;
+    this._size = size = size || {};
+    this._pos = position;
+    this._zIndex = zIndex;
+    this._viewport = viewport;
 
     this._views = [];
     this._viewIndex = 0;
 
-    this.size.w = canvas.width;
-    this.size.h = canvas.height;
+    this._size.w = canvas.width;
+    this._size.h = canvas.height;
 
-    this._element = document.createElement('canvas');
+    this._element = document.createElement(CANVAS);
     this._element.classList.add(CLASS_NAME);
-    this._element.setAttribute('data-x-layer', name);
+    this._element.setAttribute(DATA_NAME, name);
     this.ctx = this._element.getContext('2d');
 
     EXPOSED_CANVAS_METHODS.forEach((method) => {
       this[method] = canvas[method].bind(canvas);
-    });
-    EXPOSED_CANVAS_PROPS.forEach((prop) => {
-      Object.defineProperty(this, prop, { get: () => canvas[prop] });
     });
 
     this.resize();
@@ -44,16 +43,23 @@ class CanvasLayer {
     this._views.sort((a, b) => a.zIndex - b.zIndex || a.index - b.index);
   }
 
+  removeView (view) {
+    const index = this._views.findIndex((item) => item.view === view);
+    if (index !== -1) {
+      this._views.splice(index, 1);
+    }
+  }
+
   resize () {
-    this.size.w = this._canvas.width;
-    this.size.h = this._canvas.height;
-    let position = this.position || {x: 0, y: 0};
-    let zIndex = this.zIndex;
-    this._element.width = this.size.w;
-    this._element.height = this.size.h;
+    this._size.w = this._canvas.width;
+    this._size.h = this._canvas.height;
+    let position = this._pos || {x: 0, y: 0};
+    let zIndex = this._zIndex;
+    this._element.width = this._size.w;
+    this._element.height = this._size.h;
     this._element.style.position = ABSOLUTE;
-    this._element.style.left = position.x + 'px';
-    this._element.style.top = position.y + 'px';
+    this._element.style.left = position.x + PX;
+    this._element.style.top = position.y + PX;
 
     if (zIndex) {
       this._element.style.zIndex = zIndex;
@@ -77,6 +83,8 @@ class CanvasLayer {
   destroy () {
     this._canvas.purgeLayer(this);
     this._element.remove();
+    this._canvas = null;
+    this._viewport = null;
   }
 
   // -- drawing
@@ -101,8 +109,16 @@ class CanvasLayer {
     this.ctx.beginPath();
   }
 
+  moveTo (x, y) {
+    const pos = this._viewport.scalePoint({
+      x,
+      y
+    });
+    this.ctx.moveTo(pos.x, pos.y);
+  }
+
   lineTo (x, y) {
-    const pos = this.viewport.scalePoint({
+    const pos = this._viewport.scalePoint({
       x,
       y
     });
@@ -118,11 +134,11 @@ class CanvasLayer {
   }
 
   fillRect (x, y, w, h) {
-    const pos = this.viewport.scalePoint({
+    const pos = this._viewport.scalePoint({
       x,
       y
     });
-    const size = this.viewport.scaleSize({
+    const size = this._viewport.scaleSize({
       w,
       h
     });
