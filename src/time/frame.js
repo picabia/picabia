@@ -1,7 +1,8 @@
 import { Emitter } from '../core/emitter';
 
 const FREEZE = true;
-const MAX_DELTA = 10;
+const MAX_DELTA = false;
+const MAX_UPDATE = 10;
 const INTERVAL = false;
 const INTERVAL_MS = 50;
 
@@ -11,6 +12,7 @@ class Frame {
 
     config.freeze = typeof config.freeze !== 'undefined' ? config.freeze : FREEZE;
     config.maxDelta = config.maxDelta || MAX_DELTA;
+    config.maxUpdate = config.maxUpdate || MAX_UPDATE;
     config.interval = typeof config.interval !== 'undefined' ? config.interval : INTERVAL;
     config.intervalMs = config.intervalMs || INTERVAL_MS;
 
@@ -48,22 +50,20 @@ class Frame {
   _frame (timestamp) {
     let delta = this._lastTs ? timestamp - this._lastTs : 0;
     const maxDelta = this._config.maxDelta;
+    const maxUpdate = this._config.maxUpdate;
     this._lastTs = timestamp;
-    if (delta <= maxDelta || this._config.freeze) {
-      delta = this._config.freeze ? Math.min(delta, maxDelta) : delta;
-      this._elapsed += delta;
-      this._emitter.emit('update', delta, this._elapsed);
-    } else {
-      const updates = Math.floor(delta / maxDelta);
-      const remainder = delta / maxDelta;
-      for (let ix = 0; ix < updates; ix++) {
-        this._elapsed += maxDelta;
-        this._emitter.emit('update', maxDelta, this._elapsed);
-      }
-      if (remainder) {
-        this._elapsed += remainder;
-        this._emitter.emit('update', remainder, this._elapsed);
-      }
+    if (maxDelta && delta > maxDelta) {
+      delta = maxDelta;
+    }
+    const updates = Math.floor(delta / maxUpdate);
+    const remainder = delta % maxUpdate;
+    for (let ix = 0; ix < updates; ix++) {
+      this._elapsed += maxUpdate;
+      this._emitter.emit('update', maxUpdate, this._elapsed);
+    }
+    if (remainder || !updates) {
+      this._elapsed += remainder;
+      this._emitter.emit('update', remainder, this._elapsed);
     }
     this._emitter.emit('render', delta, this._elapsed);
   }
