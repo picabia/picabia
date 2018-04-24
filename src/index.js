@@ -1,5 +1,5 @@
 
-export { Node } from './core/node';
+export { Model } from './core/model';
 export { Emitter } from './core/emitter';
 
 export { KeyboardInput } from './input/keyboard';
