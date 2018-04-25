@@ -11,6 +11,7 @@ class CanvasLayer2d {
     this._name = name;
 
     options = options || {};
+    this._autoResize = 'autoResize' in options || true;
     this._autoClear = 'autoClear' in options || true;
     this._pos = options.position || { x: 0, y: 0 };
     this._zIndex = options.zIndex;
@@ -19,6 +20,10 @@ class CanvasLayer2d {
     this._element.classList.add(CLASS_NAME);
     this._element.setAttribute(DATA_NAME, this._name);
     this._ctx = this._element.getContext('2d');
+
+    this._containerResize = (size) => {
+      this.setSize(size);
+    };
   }
 
   get size () {
@@ -39,6 +44,20 @@ class CanvasLayer2d {
 
   get ctx () {
     return this._ctx;
+  }
+
+  setContainer (container) {
+    if (this._container) {
+      this._container.off('resize', this._containerResize);
+    }
+    this._container = container;
+    if (container) {
+      container.appendChild(this._element);
+      if (this._autoResize) {
+        this.setSize(container.size);
+        this._container.on('resize', this._containerResize);
+      }
+    }
   }
 
   setName (name) {
@@ -63,13 +82,13 @@ class CanvasLayer2d {
     }
   }
 
-  preRender (delta, timestamp) {
+  preRender () {
     if (this._autoClear) {
       this._ctx.clearRect(0, 0, this._size.w, this._size.h);
     }
   }
 
-  resize (size) {
+  setSize (size) {
     this._size = size;
     let position = this._pos || { x: 0, y: 0 };
     let zIndex = this._zIndex;
@@ -86,6 +105,9 @@ class CanvasLayer2d {
 
   destroy () {
     this._element.remove();
+    if (this._container) {
+      this._container.off('resize', this._containerResize);
+    }
   }
 }
 

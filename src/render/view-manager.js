@@ -14,8 +14,6 @@ class ViewManager {
 
     this._views = [];
     this._viewIndex = 0;
-
-    this.resize();
   }
 
   // - containers
@@ -85,21 +83,25 @@ class ViewManager {
       throw new Error(`Unknown container: "${containerName}".`);
     }
     if (this._layers[layer.name]) {
-      throw new Error(`Duplicate name: "${layer.name}".`);
+      throw new Error(`Duplicate layer: "${layer.name}".`);
     }
+    const container = this._containers[containerName];
     this._layers[layer.name] = layer;
-    this._containers[containerName].appendChild(layer.element);
-    layer.resize(this._containers[containerName].size);
+    layer.setContainer(container);
   }
 
   getLayer (name) {
     if (!this._layers[name]) {
-      throw new Error(`Unknown name: "${name}".`);
+      throw new Error(`Unknown layer: "${name}".`);
     }
     return this._layers[name];
   }
 
   removeLayer (name) {
+    if (!this._layers[name]) {
+      throw new Error(`Unknown layer: "${name}".`);
+    }
+    this._layers[name].setContainer();
     delete this._layers[name];
   }
 
@@ -122,32 +124,31 @@ class ViewManager {
     }
   }
 
-  // --
+  // -- render
 
   render (delta, timestamp) {
-    // ??? clear? for (let ix = 0; ix < this._layers.length; ix++) {
-    //   this._layers[ix].render(delta, timestamp);
-    // }
-
     const views = [];
     this._views.forEach((view) => {
       views.push(view);
       views.push(...view.getChildren());
     });
 
+    // @todo cache sorting, re-sort on events
     views.sort((a, b) => {
       if (a.layer === b.layer) {
         return a.zIndex - b.zIndex;
       } else {
-        const aLayerIndex = this._layers[a.layer] ? this._layers[a.layer].zIndex : 0;
-        const bLayerIndex = this._layers[b.layer] ? this._layers[b.layer].zIndex : 0;
-        return aLayerIndex - bLayerIndex;
+        const aIndex = a.layer ? a.layer.zIndex : 0;
+        const bIndex = b.layer ? b.layer.zIndex : 0;
+        return aIndex - bIndex;
       }
     });
 
+    // @todo order+cache by layer zIndex
     for (let name in this._layers) {
-      this._layers[name].preRender(delta, timestamp);
+      this._layers[name].preRender();
     }
+
     for (let ox = 0; ox < this._views.length; ox++) {
       const view = this._views[ox];
       if (view.renderer) {
@@ -165,18 +166,15 @@ class ViewManager {
   }
 
   resize () {
-    for (let ix = 0; ix < this._layers.length; ix++) {
-      this._layers[ix].resize();
-    }
-
     for (let ox = 0; ox < this._views.length; ox++) {
       this._views[ox].resize();
     }
   }
 
   destroy () {
-    // for (let layerName in this._layers.length; ix++) {
-    //   this._layers[ix].destroy();
+    // @todo destroy
+    // for (let name in this._layers) {
+    //   this._layers[name].destroy();
     // }
     // for (let ox = 0; ox < this._views.length; ox++) {
     //   this._views[ox].destroy();

@@ -163,7 +163,7 @@ class Container {
     this._size = { w: width, h: height };
     this._transform = transform;
 
-    this._emitter.emit('resize');
+    this._emitter.emit('resize', this._size);
   }
 
   destroy () {
