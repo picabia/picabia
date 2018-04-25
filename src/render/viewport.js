@@ -2,41 +2,75 @@ import { Geometry } from '../maths/geometry';
 import { Emitter } from '../core/emitter';
 
 class Viewport {
-  constructor (pos, size, angle, scale) {
-    this._pos = pos || { x: 0, y: 0 };
-    this._size = size || { w: 0, h: 0 };
-    this._angle = angle || 0;
-    this._scale = 1;
-    this._zoom = 1;
+  constructor (name, options, constraints) {
+    this._name = name;
+    options = options || {};
+    this._pos = options.pos || { x: 0, y: 0 };
+    this._size = options.size || { w: 0, h: 0 };
+    this._angle = options.angle || 0;
+    this._scale = options.scale || 1;
+    this._zoom = options.zoom || 1;
+
+    constraints = constraints || {};
+    this._c = constraints;
+    constraints.pos = constraints.pos || {};
+    constraints.pos.min = constraints.pos.min || { x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER };
+    constraints.pos.max = constraints.pos.max || { x: Number.MAX_SAFE_INTEGER, y: Number.MAX_SAFE_INTEGER };
+    constraints.size = constraints.size || {};
+    constraints.size.min = constraints.size.min || { w: 0, h: 0 };
+    constraints.size.max = constraints.size.max || { w: Number.MAX_SAFE_INTEGER, h: Number.MAX_SAFE_INTEGER };
+    constraints.angle = constraints.angle || {};
+    constraints.angle.min = constraints.angle.min || -Math.PI * 2;
+    constraints.angle.max = constraints.angle.max || Math.PI * 2;
+    constraints.scale = constraints.scale || {};
+    constraints.scale.min = constraints.scale.min || 0.1;
+    constraints.scale.max = constraints.scale.max || 1000;
+    constraints.zoom = constraints.zoom || {};
+    constraints.zoom.min = constraints.zoom.min || 0.1;
+    constraints.zoom.max = constraints.zoom.max || 1000;
 
     this._emitter = new Emitter();
     Emitter.mixin(this, this._emitter);
   }
 
-  // -- public
+  get name () {
+    return this._name;
+  }
+
+  destroy () {
+    this._emitter.destroy();
+  }
+
+  // -- drawing api
 
   setPos (pos) {
-    this._pos = pos;
+    this._pos = {
+      x: Math.min(Math.max(pos.x, this._c.pos.min.x), this._c.pos.max.x),
+      y: Math.min(Math.max(pos.y, this._c.pos.min.y), this._c.pos.max.y)
+    };
     this._emitter.emit('change');
   }
 
   setSize (size) {
-    this._size = size;
+    this._size = {
+      w: Math.min(Math.max(size.w, this._c.size.min.w), this._c.size.max.w),
+      h: Math.min(Math.max(size.h, this._c.size.min.h), this._c.size.max.h)
+    };
     this._emitter.emit('change');
   }
 
-  setAngle (radians) {
-    this._angle = radians;
+  setAngle (angle) {
+    this._angle = Math.min(Math.max(angle, this._c.angle.min), this._c.angle.max);
     this._emitter.emit('change');
   }
 
   setScale (scale) {
-    this._scale = scale;
+    this._scale = Math.min(Math.max(scale, this._c.scale.min), this._c.scale.max);
     this._emitter.emit('change');
   }
 
   setZoom (zoom) {
-    this._zoom = zoom;
+    this._zoom = Math.min(Math.max(zoom, this._c.zoom.min), this._c.zoom.max);
     this._emitter.emit('change');
   }
 

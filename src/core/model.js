@@ -21,21 +21,10 @@ class Model {
     return this._children.find(fn);
   }
 
-  _addChild (child, zIndex, meta) {
-    zIndex = zIndex || 0;
+  _addChild (child, meta) {
     meta = meta || {};
-    const index = this._childIndex++;
-    this._children.push({ obj: child, zIndex: zIndex || 0, index, meta });
-    this._children.sort((a, b) => a.zIndex - b.zIndex || a.index - b.index);
+    this._children.push({ obj: child, meta });
   }
-
-  _init () {}
-
-  _postInit () {}
-
-  _update () {}
-
-  _postUpdate () {}
 
   _removeChild (child) {
     for (let ix = 0; ix < this._children.length; ix++) {
@@ -49,6 +38,14 @@ class Model {
     this._removeChild(child);
     child.destroy();
   }
+
+  _init () {}
+
+  _postInit () {}
+
+  _update () {}
+
+  _postUpdate () {}
 
   // -- public
 
@@ -87,7 +84,7 @@ class Model {
   }
 
   dump () {
-    const _ = this._dump ? this._dump() : child;
+    const _ = this._dump ? this._dump() : this;
     const __ = this._children.map((child) => {
       return child.obj.dump ? child.obj.dump() : child.obj;
     });

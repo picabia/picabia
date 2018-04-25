@@ -1,5 +1,4 @@
 import { Emitter } from '../core/emitter';
-import { CanvasLayer } from './canvas-layer';
 
 const MODE_CONTAIN = 'contain';
 const MODE_COVER = 'cover';
@@ -17,22 +16,24 @@ const NONE = 'none';
 const BLOCK = 'block';
 const MAX_PIXELS = 800 * 600;
 
-class Canvas {
-  constructor (container, config) {
-    this._container = container;
-    config = config || {};
-    this._ratio = config.ratio || 4 / 3;
-    this._mode = config.mode || MODE_CONTAIN;
-    this._maxPixels = config._maxPixels || MAX_PIXELS;
+class Container {
+  constructor (name, dom, options) {
+    this._name = name;
+    this._dom = dom;
+    options = options || {};
+    this._ratio = options.ratio || 4 / 3;
+    this._mode = options.mode || MODE_CONTAIN;
+    this._maxPixels = options._maxPixels || MAX_PIXELS;
 
     this._emitter = new Emitter();
     Emitter.mixin(this, this._emitter);
 
     this.pixelRatio = null;
-    this.width = null;
-    this.height = null;
-    this.scale = null;
-    this.transform = null;
+    this._size = {
+      w: null,
+      h: null
+    };
+    this._transform = null;
 
     if (!this._mode) {
       this._mode = VALID_MODES[0];
@@ -40,13 +41,8 @@ class Canvas {
       throw new Error(`Invalid mode: ${this._mode}`);
     }
 
-    this._views = [];
-    this._viewIndex = 0;
-
-    this._layers = [];
-
-    container.style.width = PC_100;
-    container.style.height = PC_100;
+    dom.style.width = PC_100;
+    dom.style.height = PC_100;
 
     const root = document.createElement(DIV);
     root.classList.add(ROOT_CLASS_NAME);
@@ -55,7 +51,7 @@ class Canvas {
     root.style.justifyContent = CENTER;
     root.style.width = PC_100;
     root.style.height = PC_100;
-    container.appendChild(root);
+    dom.appendChild(root);
     this._root = root;
 
     const sizer = document.createElement(DIV);
@@ -79,62 +75,16 @@ class Canvas {
     return MODE_CONTAIN;
   }
 
-  // -- size
+  get name () {
+    return this._name;
+  }
+
+  get size () {
+    return this._size;
+  }
 
   appendChild (node) {
     this._scaler.appendChild(node);
-  }
-
-  // - layers
-
-  addLayer (name, size, position, zIndex, viewport, virtual) {
-    const layer = new CanvasLayer(this, name, size, position, zIndex, viewport);
-    this._layers.push(layer);
-    this._scaler.appendChild(layer._element);
-
-    return layer;
-  }
-
-  addVirtualLayer () {
-    const layer = new CanvasLayer(this);
-    this._layers.push(layer);
-    return layer;
-  }
-
-  removeLayer (layer) {
-    const index = this._layers.indexOf(layer);
-    if (index !== -1) {
-      this._layers.splice(index, 1);
-    }
-  }
-
-  // -- views
-
-  addView (view, zIndex) {
-    zIndex = zIndex || 0;
-    const index = this._viewIndex++;
-    this._views.push({ view, zIndex: zIndex || 0, index });
-    this._views.sort((a, b) => a.zIndex - b.zIndex || a.index - b.index);
-  }
-
-  removeView (view) {
-    const index = this._views.findIndex((item) => item.view === view);
-    if (index !== -1) {
-      this._views.splice(index, 1);
-    }
-  }
-
-  // --
-
-  render (delta, timestamp) {
-    for (var ix = 0; ix < this._views.length; ix++) {
-      if (this._views[ix].view.render) {
-        this._views[ix].view.render(delta, timestamp);
-      }
-    }
-    for (var ux = 0; ux < this._layers.length; ux++) {
-      this._layers[ux].render(delta, timestamp);
-    }
   }
 
   resize () {
@@ -150,8 +100,8 @@ class Canvas {
 
     this.pixelRatio = window.devicePixelRatio || 1;
 
-    const clientWidth = this._container.clientWidth;
-    const clientHeight = this._container.clientHeight;
+    const clientWidth = this._dom.clientWidth;
+    const clientHeight = this._dom.clientHeight;
 
     const clientRatio = clientWidth / clientHeight;
     const horizontallyBound = clientRatio < this._ratio;
@@ -210,31 +160,18 @@ class Canvas {
       scaler.style.transformOrigin = 'top left';
     }
 
-    this.width = width;
-    this.height = height;
-    this.transform = transform;
-
-    for (var ix = 0; ix < this._views.length; ix++) {
-      if (this._views[ix].view.resize) {
-        this._views[ix].view.resize();
-      }
-    }
-
-    for (var ox = 0; ox < this._layers.length; ox++) {
-      this._layers[ox].resize();
-    }
+    this._size = { w: width, h: height };
+    this._transform = transform;
 
     this._emitter.emit('resize');
   }
 
   destroy () {
-    for (var ix = 0; ix < this._layers.length; ix++) {
-      this._layers[ix].destroy();
-    }
+    this._emitter.destroy();
     this._root.remove();
   }
 }
 
 export {
-  Canvas
+  Container
 };
