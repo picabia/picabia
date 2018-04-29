@@ -52,6 +52,10 @@ class ViewManager {
     return this._viewports[name];
   }
 
+  getViewports () {
+    return Object.values(this._viewports);
+  }
+
   removeViewport (name) {
     delete this._viewports[name];
   }

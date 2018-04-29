@@ -37,6 +37,14 @@ class Viewport {
     return this._name;
   }
 
+  get pos () {
+    return this._pos;
+  }
+
+  get angle () {
+    return this._angle;
+  }
+
   destroy () {
     this._emitter.destroy();
   }
@@ -74,6 +82,7 @@ class Viewport {
     this._emitter.emit('change');
   }
 
+  // @todo use Shapes.polygon
   getShape () {
     const halfWidth = this._size.w / (2 * this._scale * this._zoom);
     const halfHeight = this._size.h / (2 * this._scale * this._zoom);
