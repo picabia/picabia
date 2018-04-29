@@ -1,0 +1,22 @@
+{
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.formatOnType": false,
+  "editor.formatOnPaste": false,
+  "editor.formatOnSave": false,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.nyc_output": true,
+    "**/coverage": true,
+    "**/node_modules": true
+  },
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "search.exclude": {
+    "**/.nyc_output": true,
+    "**/node_modules": true,
+    "**/coverage": true
+  },
+  "eslint.run": "onSave",
+  "eslint.autoFixOnSave": true
+}

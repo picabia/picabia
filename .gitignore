@@ -8,6 +8,11 @@
 /out-tsc
 /build/Release
 
+# testing
+/.nyc_output
+/coverage
+/lib-cov
+
 # dependencies
 /node_modules
 
@@ -30,8 +35,6 @@
 # misc
 /.sass-cache
 /connect.lock
-/coverage
-/lib-cov
 /typings
 
 # e2e

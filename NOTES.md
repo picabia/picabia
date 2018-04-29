@@ -41,6 +41,9 @@ http://bulletphysics.org/Bullet/BulletFull/annotated.html
 scratchapd!
 https://github.com/wellcaffeinated/PhysicsJS/wiki/Scratchpads
 
+gpu
+https://github.com/gpujs/gpu.js#creating-and-running-functions
+
 3d!
 https://whs-dev.surge.sh/examples/?physics/domino
 
