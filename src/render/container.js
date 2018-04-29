@@ -23,7 +23,7 @@ class Container {
     options = options || {};
     this._ratio = options.ratio || 4 / 3;
     this._mode = options.mode || MODE_CONTAIN;
-    this._maxPixels = options._maxPixels || MAX_PIXELS;
+    this._maxPixels = options.maxPixels || MAX_PIXELS;
 
     this._emitter = new Emitter();
     Emitter.mixin(this, this._emitter);
