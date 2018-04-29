@@ -119,6 +119,7 @@ class ViewManager {
     const view = new Constructor(this, renderer, layer, viewport);
     view._constructor(...args);
     this._views.push(view);
+    return view;
   }
 
   removeView (obj) {
@@ -131,11 +132,9 @@ class ViewManager {
   // -- render
 
   render (delta, timestamp) {
-    const views = [];
-    this._views.forEach((view) => {
-      views.push(view);
-      views.push(...view.getChildren());
-    });
+    const views = [...this._views];
+
+    // @todo view filtering/sleeping
 
     // @todo cache sorting, re-sort on events
     views.sort((a, b) => {
@@ -153,19 +152,20 @@ class ViewManager {
       this._layers[name].preRender();
     }
 
-    for (let ox = 0; ox < this._views.length; ox++) {
-      const view = this._views[ox];
-      if (view.renderer) {
-        view.renderer.setTarget(view.layer, view.viewport);
-        view.preRender(delta, timestamp);
-      }
-    }
+    // for (let ox = 0; ox < this._views.length; ox++) {
+    //   const view = this._views[ox];
+    //   if (view.renderer) {
+    //     view.renderer.setTarget(view.layer, view.viewport);
+    //   }
+    //   view.preRender(delta, timestamp);
+    // }
+
     for (let ux = 0; ux < this._views.length; ux++) {
       const view = this._views[ux];
       if (view.renderer) {
         view.renderer.setTarget(view.layer, view.viewport);
-        view.render(delta, timestamp);
       }
+      view.render(delta, timestamp);
     }
   }
 
