@@ -1,61 +1,39 @@
+## challenges
+- responsive containers with resposnive canvas (solved)
+- rotating, scalable viewports (solved)
+- multiple viewports (solved)
+- decoupled update (model) and render (view) cycles (solved)
+- fast functional maths, geometry (solved)
+- es modules in nodejs (solved)
 
-maths
-https://github.com/gamtiq/numgen
-http://algebra.js.org/
-https://www.npmjs.com/package/angles
+- view filtering in run-time
+- mixing 2d 3d sv/sleeping html containers
+- no singletons (animation frame, containers, viewports, worlds, model trees, views and lazers, renderer)
+- building for browser
 
-tinycolor
-https://github.com/bgrins/TinyColor
 
-raw shapes
-https://github.com/jriecken/sat-js/blob/master/SAT.js
+## big questions
 
-planar sets and intersections
-https://github.com/alexbol99/flatten-js
+- to typescript or not to typescript
+- to OO or not at all
+- immutable state and replayability
 
-Convert a given position into an isometric x coordinate.
-https://github.com/bendangelo/rift/blob/master/lib/tile.js#L55
 
-Filters
-https://createjs.com/docs/easeljs/classes/AlphaMaskFilter.html
+## develpoment
 
-Shaders (Pixijs)
-http://pixijs.download/release/docs/core_graphics_Graphics.js.html#line758
 
-Phaser
-https://photonstorm.github.io/phaser-ce/#toc-14
+### (sym)linking picabia libraries in demos/games/apps
 
-Body
-http://brm.io/matter-js/docs/classes/Body.html
-http://brm.io/matter-js/docs/classes/Composite.html
+1) `git clone git@github.com:picabia/picabia.git`
+2) create global symlink
+- in the dir do `npm link`
+- this creates a symlink on /usr/local/lib/node_modules/... a.k.a a global node module
+3) in the directory of the game/demo/application
+- after `npm install`
+- run `npm link @picabia/picabia`
+- this creates a local link to the global one
 
-js wold shapes, collisions, behaviours, integrators
-http://wellcaffeinated.net/PhysicsJS/docs/#Physics-world-prototype-pause
 
-materials
-http://schteppe.github.io/cannon.js/docs/classes/ContactMaterial.html
+## demos
 
-freeking bullet
-http://bulletphysics.org/Bullet/BulletFull/annotated.html
-
-scratchapd!
-https://github.com/wellcaffeinated/PhysicsJS/wiki/Scratchpads
-
-gpu
-https://github.com/gpujs/gpu.js#creating-and-running-functions
-
-3d!
-https://whs-dev.surge.sh/examples/?physics/domino
-
-filters
-https://github.com/ericdrowell/KineticJS/tree/master/src/filters
-
-shaders
-https://github.com/mrdoob/three.js/tree/dev/src/renderers
-
-fabric
-http://fabricjs.com/
-paper
-http://paperjs.org/
-kinetic
-https://github.com/ericdrowell/KineticJS/tree/master/src
+- multiple containers
