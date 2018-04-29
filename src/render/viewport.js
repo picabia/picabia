@@ -38,7 +38,17 @@ class Viewport {
   }
 
   get pos () {
-    return this._pos;
+    return {
+      x: this._pos.x,
+      y: this._pos.y
+    };
+  }
+
+  get size () {
+    return {
+      w: this._size.w,
+      h: this._size.h
+    };
   }
 
   get angle () {
