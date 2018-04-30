@@ -9,10 +9,10 @@ https://www.npmjs.com/package/angles
 ## tinycolor
 https://github.com/bgrins/TinyColor
 
-## raw shapes
+## raw shapes (object oriented with pooling)
 https://github.com/jriecken/sat-js/blob/master/SAT.js
 
-## planar sets and intersections
+## planar sets and intersections (object oriented)
 https://github.com/alexbol99/flatten-js
 
 ## Convert a given position into an isometric x coordinate.

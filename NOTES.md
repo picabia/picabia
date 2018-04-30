@@ -1,26 +1,61 @@
-## challenges
-- responsive containers with resposnive canvas (solved)
-- rotating, scalable viewports (solved)
-- multiple viewports (solved)
-- decoupled update (model) and render (view) cycles (solved)
-- fast functional maths, geometry (solved)
-- es modules in nodejs (solved)
 
-- view filtering in run-time
-- mixing 2d 3d sv/sleeping html containers
+## features
+- responsive containers with responsive canvas
+- rotating, scalable viewports
+- multiple viewports
+- decoupled update (model) and render (view) cycles
+- fast functional maths, geometry
 - no singletons (animation frame, containers, viewports, worlds, model trees, views and lazers, renderer)
-- building for browser
+- es modules in nodejs
 
 
-## big questions
+## todo
 
-- to typescript or not to typescript
-- to OO or not at all
+- structured TODOs
+- readmes
+  - picabia readme
+  - boilerplate readme
+- features
+  - [sprites](https://github.com/picabia/picabia/issues/1)
+  - sprite animation (from character model to animated sprite)
+  - off canvas texture renderer (map region model > off screen rendering > layer rendering)
+  - collision manager
+  - touch input
+  - svg
+  - html view
+- libraries
+  - map region (model)
+  - collision manager platformer
+  - collision manager shapes
+  - collision manager with physics
+- single responsibility demos
+  - container scalable
+  - container multitple
+  - container resize + viewport scale
+  - viewport pos/rotation
+  - viewport multiple
+  - 2d api
+- tutorials
+  - player movement with camera following
+  - splitting stage and hud
+  - collisions
+
+
+
+- annoying `View.prototype._constructor()` should maybe be called `._mount()`, `._start()` or `_init()`
+
+## challenges
+- building for browser <script>
+- view filtering/sleeping in run-time
 - immutable state and replayability
 
+## questions
 
-## develpoment
+- use typescript
+- not using OO at all
 
+
+## develpoment notes
 
 ### (sym)linking picabia libraries in demos/games/apps
 
@@ -32,8 +67,3 @@
 - after `npm install`
 - run `npm link @picabia/picabia`
 - this creates a local link to the global one
-
-
-## demos
-
-- multiple containers
