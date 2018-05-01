@@ -3,11 +3,19 @@ class CanvasRenderer2d {
     this._name = name;
   }
 
-  get name () {
-    return this._name;
+  _getRectPoints (x, y, w, h) {
+    const points = [];
+    points[0] = this._viewport.scalePoint({ x, y });
+    points[1] = this._viewport.scalePoint({ x: x + w, y });
+    points[2] = this._viewport.scalePoint({ x: x + w, y: y + h });
+    points[3] = this._viewport.scalePoint({ x, y: y + h });
+    return points;
   }
 
   // -- api
+  get name () {
+    return this._name;
+  }
 
   setTarget (layer, viewport) {
     this._layer = layer;
@@ -59,16 +67,27 @@ class CanvasRenderer2d {
     this._ctx.stroke();
   }
 
+  strokeRect (x, y, w, h) {
+    // @todo optimize if viewport at 0, PI/2, PI, ...
+    const points = this._getRectPoints(x, y, w, h);
+    this._ctx.beginPath();
+    this._ctx.moveTo(points[0].x, points[0].y);
+    this._ctx.lineTo(points[1].x, points[1].y);
+    this._ctx.lineTo(points[2].x, points[2].y);
+    this._ctx.lineTo(points[3].x, points[3].y);
+    this._ctx.lineTo(points[0].x, points[0].y);
+    this._ctx.stroke();
+  }
+
   fillRect (x, y, w, h) {
-    const pos = this._viewport.scalePoint({
-      x,
-      y
-    });
-    const size = this._viewport.scaleSize({
-      w,
-      h
-    });
-    this._ctx.fillRect(pos.x, pos.y, size.w, size.h);
+    // @todo optimize if viewport at 0, PI/2, PI, ...
+    const points = this._getRectPoints(x, y, w, h);
+    this._ctx.beginPath();
+    this._ctx.moveTo(points[0].x, points[0].y);
+    this._ctx.lineTo(points[1].x, points[1].y);
+    this._ctx.lineTo(points[2].x, points[2].y);
+    this._ctx.lineTo(points[3].x, points[3].y);
+    this._ctx.fill();
   }
 }
 
