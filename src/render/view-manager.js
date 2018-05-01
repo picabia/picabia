@@ -152,6 +152,7 @@ class ViewManager {
       this._layers[name].preRender();
     }
 
+    // @todo view pre-render
     // for (let ox = 0; ox < this._views.length; ox++) {
     //   const view = this._views[ox];
     //   if (view.renderer) {

@@ -11,12 +11,20 @@
 
 ## todo
 
+- core optimisations
+  - use for instead of ...
+- view manager loose ends
+  - view filtering/sleeping
+  - cache sorting, re-sort on events
+  - order+cache by layer zIndex
+  - view pre-render
+  - view destroy
 - structured TODOs
 - readmes
   - picabia readme
   - boilerplate readme
 - features
-  - [sprites](https://github.com/picabia/picabia/issues/1)
+  - sprites [GH-1](https://github.com/picabia/picabia/issues/1)
   - sprite animation (from character model to animated sprite)
   - off canvas texture renderer (map region model > off screen rendering > layer rendering)
   - collision manager
@@ -39,13 +47,18 @@
   - player movement with camera following
   - splitting stage and hud
   - collisions
-
-
-
 - annoying `View.prototype._constructor()` should maybe be called `._mount()`, `._start()` or `_init()`
 
 ## challenges
 - building for browser <script>
+- performance
+- garbage collection
+- gpu acceleration
+- webgl texture uploading
+- 3d
+- wrapping for mobile
+- integrating mobile input
+- integrating browser media (mic/camera)
 - view filtering/sleeping in run-time
 - immutable state and replayability
 
@@ -53,6 +66,16 @@
 
 - use typescript
 - not using OO at all
+
+
+## performance (checked)
+
+- loop vs forEach https://jsperf.com/foreach-vs-loop/77
+- for ++ vs while -- https://jsperf.com/for-vs-while-array (because https://gamealchemist.wordpress.com/2013/05/01/lets-get-those-javascript-arrays-to-work-fast/)
+
+## performance ideas
+
+- arrays - https://gamealchemist.wordpress.com/2013/05/01/lets-get-those-javascript-arrays-to-work-fast/
 
 
 ## develpoment notes

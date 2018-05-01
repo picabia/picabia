@@ -76,6 +76,7 @@ class CanvasLayer2d {
   }
 
   removeView (view) {
+    // @todo use for instead of findIndex
     const index = this._views.findIndex((item) => item.view === view);
     if (index !== -1) {
       this._views.splice(index, 1);

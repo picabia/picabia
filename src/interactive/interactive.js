@@ -45,7 +45,7 @@ class Interactive {
 
   destroy () {
     this._emitter.destroy();
-
+    // @todo use for instead of forEach
     this._bindings.forEach((binding) => binding.unbind());
   }
 }

@@ -15,11 +15,13 @@ class KeyboardInput {
 
     this._keydown = (event) => {
       let key = event.key.toLowerCase();
+      // @todo use for instead of forEach
       this._groups.forEach((group) => this._handleGroupKeyDown(group, key));
     };
 
     this._keyup = (event) => {
       let key = event.key.toLowerCase();
+      // @todo use for instead of forEach
       this._groups.forEach((group) => this._handleGroupKeyUp(group, key));
     };
 

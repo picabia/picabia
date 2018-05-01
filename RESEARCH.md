@@ -6,6 +6,9 @@ https://github.com/gamtiq/numgen
 http://algebra.js.org/
 https://www.npmjs.com/package/angles
 
+## loader
+https://github.com/englercj/resource-loader
+
 ## tinycolor
 https://github.com/bgrins/TinyColor
 

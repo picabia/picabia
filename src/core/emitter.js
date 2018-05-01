@@ -93,6 +93,7 @@ class Emitter {
 
 Emitter.mixin = (object, emitter, methods) => {
   methods = methods || ['on', 'once', 'off'];
+  // @todo use for instead of forEach
   methods.forEach((method) => {
     object[method] = (event, callback, context) => {
       if (context) {

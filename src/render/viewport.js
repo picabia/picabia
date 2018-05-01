@@ -51,13 +51,17 @@ class Viewport {
   get angle () {
     return this._angle;
   }
+
   get rotation () {
     return this._rotation;
   }
+
   destroy () {
     this._emitter.destroy();
   }
+
   // -- drawing api
+
   setPos (pos) {
     this._pos = {
       x: Math.min(Math.max(pos.x, this._c.pos.min.x), this._c.pos.max.x),
@@ -65,6 +69,7 @@ class Viewport {
     };
     this._emitter.emit('change');
   }
+
   setSize (size) {
     this._size = {
       w: Math.min(Math.max(size.w, this._c.size.min.w), this._c.size.max.w),
@@ -72,18 +77,22 @@ class Viewport {
     };
     this._emitter.emit('change');
   }
+
   setAngle (angle) {
     this._angle = Math.min(Math.max(angle, this._c.angle.min), this._c.angle.max);
     this._emitter.emit('change');
   }
+
   setRotation (rotation) {
     this._rotation = Math.min(Math.max(rotation, this._c.rotation.min), this._c.rotation.max);
     this._emitter.emit('change');
   }
+
   setScale (scale) {
     this._scale = Math.min(Math.max(scale, this._c.scale.min), this._c.scale.max);
     this._emitter.emit('change');
   }
+
   setZoom (zoom) {
     this._zoom = Math.min(Math.max(zoom, this._c.zoom.min), this._c.zoom.max);
     this._emitter.emit('change');
@@ -98,12 +107,14 @@ class Viewport {
       { x: this._pos.x + halfWidth, y: this._pos.y + halfHeight },
       { x: this._pos.x - halfWidth, y: this._pos.y + halfHeight }
     ];
+    // @todo use for instead of map
     return shape.map(point => Geometry.rotateVector(point, -this._angle + this._rotation, this._pos));
   }
   scaleValue (val) {
     return Math.round(this._scale * this._zoom * val);
   }
   scaleArray (arr) {
+    // @todo use for instead of map
     return arr.map((val) => Math.round(this._scale * this._zoom * val));
   }
   scaleSize (size) {
@@ -125,6 +136,7 @@ class Viewport {
     return scaled;
   }
   scalePoints (points) {
+    // @todo use for instead of map
     return points.map((point) => this.scalePoint(point));
   }
 }
