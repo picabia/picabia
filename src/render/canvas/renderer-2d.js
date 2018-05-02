@@ -79,6 +79,18 @@ class CanvasRenderer2d {
     this._ctx.stroke();
   }
 
+  drawImage (image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) {
+    const destination = this._viewport.scalePoint({ x: dx, y: dy });
+    const size = this._viewport.scaleSize({ w: dWidth, h: dHeight });
+    const angleInRadians = this._viewport.angle + this._viewport.rotation;
+    this._ctx.translate(destination.x, destination.y);
+    this._ctx.rotate(angleInRadians);
+    // this._ctx.drawImage(image, -size.w / 2, -size.h / 2, size.w, size.h);
+    this._ctx.drawImage(image, sx, sy, sWidth, sHeight, -size.w / 2, -size.h / 2, size.w, size.h);
+    this._ctx.rotate(-angleInRadians);
+    this._ctx.translate(-destination.x, -destination.y);
+  }
+
   fillRect (x, y, w, h) {
     // @todo optimize if viewport at 0, PI/2, PI, ...
     const points = this._getRectPoints(x, y, w, h);
