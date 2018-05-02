@@ -68,10 +68,21 @@
 - not using OO at all
 
 
-## performance (checked)
+## performance (verified)
 
-- loop vs forEach https://jsperf.com/foreach-vs-loop/77
-- for ++ vs while -- https://jsperf.com/for-vs-while-array (because https://gamealchemist.wordpress.com/2013/05/01/lets-get-those-javascript-arrays-to-work-fast/)
+- [loop vs forEach](https://jsperf.com/foreach-vs-loop/77)
+- [for ++ vs while --](https://jsperf.com/for-vs-while-array) because [cache](https://gamealchemist.wordpress.com/2013/05/01/lets-get-those-javascript-arrays-to-work-fast/)
+- [drawImage vs putImageData](https://jsperf.com/canvas-drawimage-vs-putimagedata/3) because copy to main memory
+- [drawImage defaults vs all args set](https://jsperf.com/canvas-draw-defaults-vs-all-params/1)
+  - defaults vs no args tested @64x64 and @1024x1024
+  - chrome irrelevant: always ~140K
+  - firefox args matter: ~35K vs ~90K @64K (better with args) but ~13K vs 9K @1024 (worse with args)
+  - safari lol: args irrelevant ~23K @64 / only ~3K vs ~8K @1024
+
+
+## performance (irrelevant)
+
+- [drawImage vs drawImage with scaling](https://jsperf.com/canvas-draw-image-vs-draw-image-scaled/1)
 
 ## performance ideas
 
