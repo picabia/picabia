@@ -5,6 +5,10 @@ export { Emitter } from './core/emitter';
 
 export { KeyboardInput } from './input/keyboard';
 
+export { TileMap } from './map/tile-map';
+export { TileMapPreRenderer } from './map/tile-map-renderer';
+export { TileRegion } from './map/tile-region';
+
 export { Distance } from './maths/distance';
 export { Geometry } from './maths/geometry';
 export { Granular } from './maths/granular';
@@ -24,6 +28,7 @@ export { Shape } from './shape/index';
 
 export { SpriteSheet } from './texture/sprite-sheet';
 export { SpriteConverterTexturePackerPixiJs } from './texture/converters/texture-packer-pixi-js';
+export { TileSet } from './texture/tile-set';
 
 export { Frame } from './time/frame';
 export { Time } from './time/time';

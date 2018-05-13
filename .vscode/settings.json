@@ -7,13 +7,15 @@
   "files.exclude": {
     "**/.git": true,
     "**/.nyc_output": true,
-    "**/coverage": true,
-    "**/node_modules": true
+    "**/dist": true,
+    "**/node_modules": true,
+    "**/coverage": true
   },
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   "search.exclude": {
     "**/.nyc_output": true,
+    "**/dist": true,
     "**/node_modules": true,
     "**/coverage": true
   },
