@@ -68,21 +68,6 @@ class CanvasLayer2d {
     this._element.setAttribute(DATA_NAME, this._name);
   }
 
-  addView (view, zIndex) {
-    zIndex = zIndex || 0;
-    const index = this._viewIndex++;
-    this._views.push({ view, zIndex: zIndex || 0, index });
-    this._views.sort((a, b) => a.zIndex - b.zIndex || a.index - b.index);
-  }
-
-  removeView (view) {
-    // @todo use for instead of findIndex
-    const index = this._views.findIndex((item) => item.view === view);
-    if (index !== -1) {
-      this._views.splice(index, 1);
-    }
-  }
-
   preRender () {
     if (this._autoClear) {
       this._ctx.clearRect(0, 0, this._size.w, this._size.h);

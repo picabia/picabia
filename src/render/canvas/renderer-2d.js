@@ -1,4 +1,5 @@
 class CanvasRenderer2d {
+  // @todo round values before painting? research performance/visual impact of sub-pixel rendering - maybe make this optional
   constructor (name) {
     this._name = name;
   }
@@ -17,10 +18,10 @@ class CanvasRenderer2d {
     return this._name;
   }
 
-  setTarget (layer, viewport) {
+  setTarget (viewport, layer) {
+    this._viewport = viewport;
     this._layer = layer;
     this._ctx = layer.ctx;
-    this._viewport = viewport;
   }
 
   setFillStyle (style) {
@@ -80,15 +81,22 @@ class CanvasRenderer2d {
   }
 
   drawImage (image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) {
-    const destination = this._viewport.scalePoint({ x: dx, y: dy });
+    if (!(this._viewport.angle + this._viewport.rotation)) {
+      const destination = this._viewport.scalePoint({ x: dx, y: dy });
+      const opposite = this._viewport.scalePoint({ x: dx + dWidth, y: dy + dHeight });
+      const size = { w: opposite.x - destination.x, h: opposite.y - destination.y };
+      this._ctx.drawImage(image, sx, sy, sWidth, sHeight, destination.x, destination.y, size.w, size.h);
+      return;
+    }
+
+    const center = this._viewport.scalePoint({ x: dx + dWidth / 2, y: dy + dHeight / 2 });
     const size = this._viewport.scaleSize({ w: dWidth, h: dHeight });
     const angleInRadians = this._viewport.angle + this._viewport.rotation;
-    this._ctx.translate(destination.x, destination.y);
+    this._ctx.translate(center.x, center.y);
     this._ctx.rotate(angleInRadians);
-    // this._ctx.drawImage(image, -size.w / 2, -size.h / 2, size.w, size.h);
     this._ctx.drawImage(image, sx, sy, sWidth, sHeight, -size.w / 2, -size.h / 2, size.w, size.h);
     this._ctx.rotate(-angleInRadians);
-    this._ctx.translate(-destination.x, -destination.y);
+    this._ctx.translate(-center.x, -center.y);
   }
 
   fillRect (x, y, w, h) {

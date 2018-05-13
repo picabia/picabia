@@ -2,6 +2,7 @@ import { Geometry } from '../maths/geometry';
 import { Emitter } from '../core/emitter';
 
 class Viewport {
+  // @todo do not round scaled values
   constructor (name, options, constraints) {
     this._name = name;
     options = options || {};
