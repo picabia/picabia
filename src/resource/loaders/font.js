@@ -16,7 +16,7 @@ const loadFont = (resource) => {
   return font.load()
     .then(() => {
       style.remove();
-      return { face };
+      return face;
     });
 };
 

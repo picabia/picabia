@@ -35,7 +35,7 @@ class Loader {
     }
     const promise = loader.method(resource)
       .then((result) => {
-        return Object.assign({}, resource, result);
+        return Object.assign({}, resource, { res: result });
       });
     this._cache[resource.url] = promise;
     return promise;
@@ -45,16 +45,7 @@ class Loader {
     if (!Array.isArray(resources)) {
       resources = [resources];
     }
-    return resources.map((resource) => {
-      if (typeof resource === 'string') {
-        return {
-          url: resource,
-          name: resource
-        };
-      } else {
-        return resource;
-      }
-    });
+    return resources.map((resource) => (typeof resource === 'string') ? { url: resource } : resource);
   }
 
   // @todo concurrency
