@@ -41,6 +41,14 @@ const getAABBRect = (points) => {
   return [min.x, min.y, max.x - min.x, max.y - min.y];
 };
 
+const toRadians = (degrees) => {
+  return degrees * Math.PI / 180;
+};
+
+const toDegrees = (radians) => {
+  return radians / Math.PI * 180;
+};
+
 const radiansDelta = (radiansA, radiansB) => {
   const diff = radiansA - radiansB;
   return modulo(diff + Math.PI, Math.PI * 2) - Math.PI;
@@ -58,6 +66,8 @@ const rotateVector = (vector, radians, origin) => {
 const Geometry = {
   getAABBRect,
   radiansToVector,
+  toRadians,
+  toDegrees,
   radiansDelta,
   normalizeHalfAngle,
   normalizeAngle,
