@@ -1,20 +1,22 @@
 class Emitter {
   constructor () {
-    this._callbacks = {};
+    this._listeners = {};
   }
 
   /**
    * Listen on the given `event` with `fn`.
    *
    * @param {String} event
-   * @param {Function} fn
+   * @param {Function} listenerFn
+   * @param {Object?} context
    * @return {Emitter}
    */
-  on (event, fn) {
-    if (typeof fn !== 'function') {
+  on (event, listenerFn, context) {
+    if (typeof listenerFn !== 'function') {
       throw new Error('Invalid callback function.');
     }
-    (this._callbacks[event] = this._callbacks[event] || []).push(fn);
+    this._listeners[event] = this._listeners[event] || [];
+    this._listeners[event].push({ fn: listenerFn, context });
     return this;
   };
 
@@ -23,39 +25,39 @@ class Emitter {
    * time then automatically removed.
    *
    * @param {String} event
-   * @param {Function} fn
+   * @param {Function} listenerFn
+   * @param {Object?} context
    * @return {Emitter}
    */
-  once (event, fn) {
-    const on = () => {
+  once (event, listenerFn, context) {
+    const on = function () {
       this.off(event, on);
-      fn.apply(this, arguments);
+      listenerFn.apply(context || this, arguments);
     };
     this.on(event, on);
     return this;
   };
 
   /**
-   * Remove the given callback for `event` or all
-   * registered callbacks.
+   * Remove the given listeners for `event` or all registered listeners.
    *
    * @param {String} event
-   * @param {Function} fn
+   * @param {Function} listenerFn
    * @return {Emitter}
    */
-  off (event, fn) {
+  off (event, listenerFn) {
     // specific event
-    const eventCallbacks = this._callbacks[event];
-    if (!eventCallbacks) {
+    const eventListeners = this._listeners[event];
+    if (!eventListeners) {
       return this;
     }
 
     // remove specific handler
-    let callback;
-    for (let ix = 0; ix < eventCallbacks.length; ix++) {
-      callback = eventCallbacks[ix];
-      if (callback === fn) {
-        eventCallbacks.splice(ix, 1);
+    let fn;
+    for (let ix = 0; ix < eventListeners.length; ix++) {
+      fn = eventListeners[ix].fn; ;
+      if (listenerFn === fn) {
+        eventListeners.splice(ix, 1);
         break;
       }
     }
@@ -71,12 +73,16 @@ class Emitter {
    */
   emit (event) {
     const args = [].slice.call(arguments, 1);
-    let eventCallbacks = this._callbacks[event];
+    let eventListeners = this._listeners[event];
 
-    if (eventCallbacks) {
-      eventCallbacks = eventCallbacks.slice(0);
-      for (let ix = 0, len = eventCallbacks.length; ix < len; ++ix) {
-        eventCallbacks[ix].apply(this, args);
+    if (eventListeners) {
+      eventListeners = eventListeners.slice(0);
+      let listenerFn;
+      let context;
+      for (let ix = 0, len = eventListeners.length; ix < len; ++ix) {
+        listenerFn = eventListeners[ix].fn;
+        context = eventListeners[ix].context;
+        listenerFn.apply(context || this, args);
       }
     }
 
@@ -84,9 +90,9 @@ class Emitter {
   }
 
   destroy () {
-    for (let event in this._callbacks) {
-      let eventCallbacks = this._callbacks[event];
-      eventCallbacks.splice(0, eventCallbacks.length);
+    for (let event in this._listeners) {
+      let eventListeners = this._listeners[event];
+      eventListeners.splice(0, eventListeners.length);
     }
   };
 }
@@ -95,12 +101,8 @@ Emitter.mixin = (object, emitter, methods) => {
   methods = methods || ['on', 'once', 'off'];
   // @todo use for instead of forEach
   methods.forEach((method) => {
-    object[method] = (event, callback, context) => {
-      if (context) {
-        emitter[method].call(context, event, callback);
-      } else {
-        emitter[method](event, callback);
-      }
+    object[method] = (event, listenerFn, context) => {
+      emitter[method](event, listenerFn, context);
     };
   });
 };
