@@ -1,9 +1,7 @@
 import { Emitter } from '../core/emitter';
 
 class ViewManager {
-  constructor (container) {
-    this._container = container;
-
+  constructor () {
     this._emitter = new Emitter();
     Emitter.mixin(this, this._emitter);
 
@@ -13,7 +11,6 @@ class ViewManager {
     this._layers = {};
 
     this._views = [];
-    this._viewIndex = 0;
   }
 
   // - containers
@@ -115,9 +112,8 @@ class ViewManager {
     this._views.push(view);
   }
 
-  createView (Constructor, args, renderer, layer, viewport) {
-    const view = new Constructor(this, renderer, layer, viewport);
-    view._constructor(...args);
+  createView (Constructor, args, renderer, viewport, layer, zIndex) {
+    const view = new Constructor(this, args, renderer, viewport, layer, zIndex);
     this._views.push(view);
     return view;
   }
@@ -131,7 +127,7 @@ class ViewManager {
 
   // -- render
 
-  render (delta, timestamp) {
+  render (rootView, delta, timestamp) {
     const views = [...this._views];
 
     // @todo view filtering/sleeping
@@ -149,22 +145,15 @@ class ViewManager {
 
     // @todo order+cache by layer zIndex
     for (let name in this._layers) {
-      this._layers[name].preRender();
+      this._layers[name].preRender(delta, timestamp);
     }
 
-    // @todo view pre-render
-    // for (let ox = 0; ox < this._views.length; ox++) {
-    //   const view = this._views[ox];
-    //   if (view.renderer) {
-    //     view.renderer.setTarget(view.layer, view.viewport);
-    //   }
-    //   view.preRender(delta, timestamp);
-    // }
+    rootView.preRender(delta, timestamp);
 
     for (let ux = 0; ux < this._views.length; ux++) {
       const view = this._views[ux];
       if (view.renderer) {
-        view.renderer.setTarget(view.layer, view.viewport);
+        view.renderer.setTarget(view.viewport, view.layer);
       }
       view.render(delta, timestamp);
     }
