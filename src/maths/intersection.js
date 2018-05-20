@@ -44,6 +44,8 @@ const polygonWithSegment = (polygon, segment) => {
 const between = (shapeA, shapeB) => {
   const type = shapeA._ + '+' + shapeB._;
   switch (type) {
+    case 'segment+segment':
+      return segmentWithSegment(shapeA, shapeB);
     case 'segment+polygon':
       return segmentWithPolygon(shapeA, shapeB);
     case 'polygon+segment':

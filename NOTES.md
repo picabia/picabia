@@ -17,17 +17,12 @@
   - view filtering/sleeping
   - cache sorting, re-sort on events
   - order+cache by layer zIndex
-  - view pre-render
   - view destroy
 - structured TODOs
 - readmes
   - picabia readme
   - boilerplate readme
 - features
-  - sprites [GH-1](https://github.com/picabia/picabia/issues/1)
-  - sprite animation (from character model to animated sprite)
-  - off canvas texture renderer (map region model > off screen rendering > layer rendering)
-  - collision manager
   - touch input
   - svg
   - html view
@@ -43,6 +38,9 @@
   - viewport pos/rotation
   - viewport multiple
   - 2d api
+  - sprite
+  - tile-maps
+  - cameras
 - tutorials
   - player movement with camera following
   - splitting stage and hud
@@ -78,7 +76,9 @@
   - chrome irrelevant: always ~140K
   - firefox args matter: ~35K vs ~90K @64K (better with args) but ~13K vs 9K @1024 (worse with args)
   - safari lol: args irrelevant ~23K @64 / only ~3K vs ~8K @1024
-
+- [calling noop vs checking first](https://jsperf.com/oo-noop-vs-check)
+- [cost of array indexOf](https://jsperf.com/cost-of-index-lookup)
+  - increases dramatically with actual index of looked up element
 
 ## performance (irrelevant)
 
@@ -101,3 +101,9 @@
 - after `npm install`
 - run `npm link @picabia/picabia`
 - this creates a local link to the global one
+
+## reading
+
+- [Stop Drawing Dead Fish - Brad Victor](https://vimeo.com/64895205)
+- [A* Path Finder](https://www.redblobgames.com/pathfinding/a-star/introduction.html)
+- [A* Grids](https://www.redblobgames.com/pathfinding/tower-defense/)

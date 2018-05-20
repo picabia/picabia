@@ -38,7 +38,7 @@ const square = (startedAt, center, amplitude, period, phase) => {
   return (timestamp) => {
     const elapsed = timestamp - startedAt;
     const local = ((phase * period + elapsed) % period) / period;
-    return local < 0.5 ? 1 : -1;
+    return local < 0.5 ? center + amplitude : center - amplitude;
   };
 };
 

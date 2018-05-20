@@ -29,7 +29,16 @@ const throttleAF = (fn, ms, ctx) => {
   };
 };
 
+const run = (now, wait) => {
+  return (timestamp, fn) => {
+    if (timestamp > now + wait) {
+      fn();
+    }
+  };
+};
+
 const Time = {
+  run,
   throttle,
   throttleAF
 };

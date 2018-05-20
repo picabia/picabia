@@ -1,3 +1,8 @@
+const fromRadians = (radians) => ({
+  x: Math.cos(radians),
+  y: Math.sin(radians)
+});
+
 const fromPoints = (pointA, pointB) => {
   return {
     x: pointA.x - pointB.x,
@@ -23,6 +28,7 @@ const normalize = (vector) => {
 const dot = (vA, vB) => vA.x * vB.x + vA.y * vB.y;
 
 const Vector = {
+  fromRadians,
   fromPoints,
   //
   copy,
