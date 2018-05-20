@@ -6,8 +6,8 @@ const ABSOLUTE = 'absolute';
 const PX = 'px';
 
 class CanvasLayer2d {
-  constructor (name, options) {
-    this._size = null;
+  constructor (name, container, options) {
+    this._ = 'layer';
     this._name = name;
 
     options = options || {};
@@ -16,15 +16,53 @@ class CanvasLayer2d {
     this._pos = options.position || { x: 0, y: 0 };
     this._zIndex = options.zIndex;
 
+    this._size = null;
+    this._requiresResize = false;
+
     this._element = document.createElement(CANVAS);
     this._element.classList.add(CLASS_NAME);
     this._element.setAttribute(DATA_NAME, this._name);
     this._ctx = this._element.getContext('2d');
 
-    this._containerResize = (size) => {
-      this.setSize(size);
-    };
+    if (container) {
+      this._setContainer(container);
+    }
   }
+
+  _containerResize () {
+    this._requiresResize = true;
+  };
+
+  _setContainer (container) {
+    if (this._container) {
+      this._container.off('resize', this._containerResize);
+    }
+    this._container = container;
+    if (container) {
+      container.appendChild(this._element);
+      if (this._autoResize) {
+        this._requiresResize = true;
+        this._container.on('resize', this._containerResize, this);
+      }
+    }
+  }
+
+  _resize () {
+    this._size = this._container.size;
+    let position = this._pos || { x: 0, y: 0 };
+    let zIndex = this._zIndex;
+    this._element.width = this._size.w;
+    this._element.height = this._size.h;
+    this._element.style.position = ABSOLUTE;
+    this._element.style.left = position.x + PX;
+    this._element.style.top = position.y + PX;
+
+    if (zIndex) {
+      this._element.style.zIndex = zIndex;
+    }
+  }
+
+  // -- api
 
   get size () {
     return this._size;
@@ -47,17 +85,7 @@ class CanvasLayer2d {
   }
 
   setContainer (container) {
-    if (this._container) {
-      this._container.off('resize', this._containerResize);
-    }
-    this._container = container;
-    if (container) {
-      container.appendChild(this._element);
-      if (this._autoResize) {
-        this.setSize(container.size);
-        this._container.on('resize', this._containerResize);
-      }
-    }
+    this._setContainer(container);
   }
 
   setName (name) {
@@ -68,24 +96,15 @@ class CanvasLayer2d {
     this._element.setAttribute(DATA_NAME, this._name);
   }
 
+  // - view manager
+
   preRender () {
+    if (this._requiresResize && this._container) {
+      this._resize();
+      this._requiresResize = false;
+    }
     if (this._autoClear) {
       this._ctx.clearRect(0, 0, this._size.w, this._size.h);
-    }
-  }
-
-  setSize (size) {
-    this._size = size;
-    let position = this._pos || { x: 0, y: 0 };
-    let zIndex = this._zIndex;
-    this._element.width = this._size.w;
-    this._element.height = this._size.h;
-    this._element.style.position = ABSOLUTE;
-    this._element.style.left = position.x + PX;
-    this._element.style.top = position.y + PX;
-
-    if (zIndex) {
-      this._element.style.zIndex = zIndex;
     }
   }
 

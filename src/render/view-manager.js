@@ -5,135 +5,23 @@ class ViewManager {
     this._emitter = new Emitter();
     Emitter.mixin(this, this._emitter);
 
-    this._containers = {};
-    this._viewports = {};
-    this._renderers = {};
-    this._layers = {};
+    this._objects = {};
 
-    this._views = [];
+    this._collections = {
+      container: [],
+      viewport: [],
+      camera: [],
+      renderer: [],
+      layer: [],
+      view: []
+    };
   }
 
-  // - containers
-
-  addContainer (container) {
-    if (this._containers[container.name]) {
-      throw new Error(`Duplicate container: "${container.name}".`);
-    }
-    this._containers[container.name] = container;
-  }
-
-  getContainer (name) {
-    if (!this._containers[name]) {
-      throw new Error(`Unknown container: "${name}".`);
-    }
-    return this._containers[name];
-  }
-
-  removeContainer (name) {
-    delete this._containers[name];
-  }
-
-  // - viewports
-
-  addViewport (viewport) {
-    if (this._viewports[viewport.name]) {
-      throw new Error(`Duplicate viewport: "${viewport.name}".`);
-    }
-    this._viewports[viewport.name] = viewport;
-  }
-
-  getViewport (name) {
-    if (!this._viewports[name]) {
-      throw new Error(`Unknown viewport: "${name}".`);
-    }
-    return this._viewports[name];
-  }
-
-  getViewports () {
-    return Object.values(this._viewports);
-  }
-
-  removeViewport (name) {
-    delete this._viewports[name];
-  }
-
-  // - renderers
-
-  addRenderer (renderer) {
-    if (this._renderers[renderer.name]) {
-      throw new Error(`Duplicate renderer: "${renderer.name}".`);
-    }
-    this._renderers[renderer.name] = renderer;
-  }
-
-  getRenderer (name) {
-    if (!this._renderers[name]) {
-      throw new Error(`Unknown renderer: "${name}".`);
-    }
-    return this._renderers[name];
-  }
-
-  removeRenderer (name) {
-    delete this._renderers[name];
-  }
-
-  // - layers
-
-  addLayer (containerName, layer) {
-    if (!this._containers[containerName]) {
-      throw new Error(`Unknown container: "${containerName}".`);
-    }
-    if (this._layers[layer.name]) {
-      throw new Error(`Duplicate layer: "${layer.name}".`);
-    }
-    const container = this._containers[containerName];
-    this._layers[layer.name] = layer;
-    layer.setContainer(container);
-  }
-
-  getLayer (name) {
-    if (!this._layers[name]) {
-      throw new Error(`Unknown layer: "${name}".`);
-    }
-    return this._layers[name];
-  }
-
-  removeLayer (name) {
-    if (!this._layers[name]) {
-      throw new Error(`Unknown layer: "${name}".`);
-    }
-    this._layers[name].setContainer();
-    delete this._layers[name];
-  }
-
-  // -- views
-
-  addView (view) {
-    this._views.push(view);
-  }
-
-  createView (Constructor, args, renderer, viewport, layer, zIndex) {
-    const view = new Constructor(this, args, renderer, viewport, layer, zIndex);
-    this._views.push(view);
-    return view;
-  }
-
-  removeView (obj) {
-    const index = this._views.indexOf(obj);
-    if (index !== -1) {
-      this._views.splice(index, 1);
-    }
-  }
-
-  // -- render
-
-  render (rootView, delta, timestamp) {
-    const views = [...this._views];
-
+  _newView (view) {
+    // @todo sort by layer
     // @todo view filtering/sleeping
-
-    // @todo cache sorting, re-sort on events
-    views.sort((a, b) => {
+    // @todo bind view z-index / layer changes and re-sort
+    this._collections.view.sort((a, b) => {
       if (a.layer === b.layer) {
         return a.zIndex - b.zIndex;
       } else {
@@ -142,20 +30,87 @@ class ViewManager {
         return aIndex - bIndex;
       }
     });
+  }
 
-    // @todo order+cache by layer zIndex
-    for (let name in this._layers) {
-      this._layers[name].preRender(delta, timestamp);
+  // -- api
+
+  // - objects
+
+  add (obj) {
+    if (this._objects[obj.name]) {
+      throw new Error(`Duplicate obj: "${obj._}:${obj.name}".`);
+    }
+    if (!obj.name && !obj._) {
+      throw new Error(`Invalid obj: "${obj._}:${obj.name}".`);
+    }
+    if (obj.name) {
+      this._objects[obj.name] = obj;
+    }
+    if (obj._) {
+      this._collections[obj._].push(obj);
+      if (obj._ === 'view') {
+        this._newView(obj);
+      }
+    }
+  }
+
+  get (name) {
+    if (!this._objects[name]) {
+      throw new Error(`Unknown object: "${name}".`);
+    }
+    return this._objects[name];
+  }
+
+  remove (name) {
+    let obj;
+    if (typeof name === 'string') {
+      obj = this._objects[name];
+    } else {
+      obj = name;
+      name = obj && obj.name;
+    }
+    if (obj && obj._) {
+      const index = this._collections[obj._].indexOf(obj);
+      if (index !== -1) {
+        this._collections[obj._].splice(index, 1);
+      }
+    }
+    if (name) {
+      delete this._objects[name];
+    }
+  }
+
+  // - render
+
+  render (rootView, time) {
+    const containers = this._collections.container;
+    const layers = this._collections.layer;
+    const cameras = this._collections.camera;
+    const views = this._collections.view;
+
+    // @todo order+cache by container zIndex
+    for (let ix = 0; ix < containers.length; ix++) {
+      containers[ix].preRender(time);
     }
 
-    rootView.preRender(delta, timestamp);
+    // @todo order+cache by layer zIndex
+    for (let ix = 0; ix < layers.length; ix++) {
+      layers[ix].preRender(time);
+    }
 
-    for (let ux = 0; ux < this._views.length; ux++) {
-      const view = this._views[ux];
+    // @todo order+cache by layer zIndex
+    for (let ix = 0; ix < cameras.length; ix++) {
+      cameras[ix].preRender(time);
+    }
+
+    rootView.update(time);
+
+    for (let ux = 0; ux < views.length; ux++) {
+      const view = views[ux];
       if (view.renderer) {
         view.renderer.setTarget(view.viewport, view.layer);
+        view.render(time);
       }
-      view.render(delta, timestamp);
     }
   }
 

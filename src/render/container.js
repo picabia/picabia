@@ -18,6 +18,7 @@ const MAX_PIXELS = 800 * 600;
 
 class Container {
   constructor (name, dom, options) {
+    this._ = 'container';
     this._name = name;
     this._dom = dom;
     options = options || {};
@@ -34,6 +35,8 @@ class Container {
       h: null
     };
     this._transform = null;
+
+    this._requiresResize = false;
 
     if (!this._mode) {
       this._mode = VALID_MODES[0];
@@ -67,27 +70,7 @@ class Container {
     this.resize();
   }
 
-  static get MODE_COVER () {
-    return MODE_COVER;
-  }
-
-  static get MODE_CONTAIN () {
-    return MODE_CONTAIN;
-  }
-
-  get name () {
-    return this._name;
-  }
-
-  get size () {
-    return this._size;
-  }
-
-  appendChild (node) {
-    this._scaler.appendChild(node);
-  }
-
-  resize () {
+  _resize () {
     const sizer = this._sizer;
     const scaler = this._scaler;
 
@@ -164,6 +147,41 @@ class Container {
     this._transform = transform;
 
     this._emitter.emit('resize', this._size);
+  }
+
+  static get MODE_COVER () {
+    return MODE_COVER;
+  }
+
+  static get MODE_CONTAIN () {
+    return MODE_CONTAIN;
+  }
+
+  // -- api
+
+  get name () {
+    return this._name;
+  }
+
+  get size () {
+    return this._size;
+  }
+
+  appendChild (node) {
+    this._scaler.appendChild(node);
+  }
+
+  resize () {
+    this._requiresResize = true;
+  }
+
+  // - view manager
+
+  preRender () {
+    if (this._requiresResize) {
+      this._resize();
+      this._requiresResize = false;
+    }
   }
 
   destroy () {

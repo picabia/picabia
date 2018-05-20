@@ -1,14 +1,23 @@
 class View {
   constructor (vm, args, renderer, viewport, layer, zIndex) {
+    this._ = 'view';
     this._vm = vm;
 
-    this._renderer = renderer && this._vm.getRenderer(renderer);
-    this._viewport = viewport && this._vm.getViewport(viewport);
-    this._layer = layer && this._vm.getLayer(layer);
+    this._renderer = renderer && this._vm.get(renderer, 'renderer');
+    this._viewport = viewport && this._vm.get(viewport, 'viewport');
+    this._layer = layer && this._vm.get(layer, 'layer');
     this._zIndex = zIndex || 0;
 
     this._children = [];
     this._childIndex = 0;
+
+    this._requiresResize = false;
+
+    this._time = {
+      i: undefined,
+      t: undefined,
+      d: undefined
+    };
 
     this._constructor(...args);
   }
@@ -45,29 +54,26 @@ class View {
     return this._zIndex;
   }
 
-  // -- overridable
-
-  _constructor () {}
-
-  _resize () {}
-
-  _postResize () {}
-
-  _preRender (delta, timestamp) {}
-
-  _render (delta, timestamp) {}
+  _init (time) {
+    this._preInit();
+    for (let ix = 0; ix < this._children.length; ix++) {
+      this._children[ix]._init(time);
+    }
+    this._postInit();
+  }
 
   // -- private
 
   _createChild (Constructor, args, renderer, viewport, layer, zIndex) {
-    const child = this._vm.createView(Constructor, args, renderer, viewport, layer, zIndex);
+    const child = new Constructor(this._vm, args, renderer, viewport, layer, zIndex);
     this._children.push(child);
+    this._vm.add(child);
   }
 
   _removeChild (child) {
     const index = this._children.indexOf(child);
     if (index !== -1) {
-      this._vm.removeView(child);
+      this._vm.remove(child);
       this._children.splice(index, 1);
     }
   }
@@ -77,29 +83,69 @@ class View {
     child.destroy();
   }
 
+  // -- overridable
+
+  _constructor () {}
+
+  _preInit () {}
+
+  _postInit () {}
+
+  _preResize () {}
+
+  _postResize () {}
+
+  _preUpdate () {}
+
+  _postUpdate () {}
+
+  _render () {}
+
+  _destroy () {}
+
   // -- public
 
+  get time () {
+    return {
+      t: this._time.t,
+      d: this._time.d || 0
+    };
+  }
+
   resize () {
-    this._resize();
-    for (let ix = 0; ix < this._children.length; ix++) {
-      this._children[ix].resize();
-    }
-    this._postResize();
+    this._requiresResize = true;
   }
 
-  preRender (delta, timestamp) {
-    this._preRender(delta, timestamp);
-    for (let ix = 0; ix < this._children.length; ix++) {
-      this._children[ix].preRender(delta, timestamp);
+  update (time) {
+    if (this._time.i === undefined) {
+      this._time.i = time.t;
+      this._time.t = time.t;
+      this._init(time);
     }
+    this._time.t = time.t;
+    this._time.d = time.d;
+
+    if (this._requiresResize) {
+      this._requiresResize = false;
+      this._preResize();
+      for (let ix = 0; ix < this._children.length; ix++) {
+        this._children[ix].resize();
+      }
+      this._postResize();
+    }
+
+    this._preUpdate();
+    for (let ix = 0; ix < this._children.length; ix++) {
+      this._children[ix].update(time);
+    }
+    this._postUpdate();
   }
 
-  render (delta, timestamp) {
-    this._render(delta, timestamp);
+  render () {
+    this._render();
   }
 
   destroy () {
-    this._destroy();
     for (let ix = 0; ix < this._children.length; ix++) {
       const child = this._children[ix];
       child.destroy();
@@ -109,6 +155,7 @@ class View {
       }
     }
     this._children.splice(0);
+    this._destroy();
     this._destroyed = true;
   }
 

@@ -18,6 +18,8 @@ export { Intersection } from './maths/intersection';
 export { Container } from './render/container';
 export { ViewManager } from './render/view-manager';
 export { Viewport } from './render/viewport';
+export { ViewportGroup } from './render/viewport-group';
+export { Camera } from './render/camera';
 export { CanvasLayer2d } from './render/canvas/layer-2d';
 export { CanvasRenderer2d } from './render/canvas/renderer-2d';
 

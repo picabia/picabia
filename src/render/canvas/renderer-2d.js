@@ -1,6 +1,7 @@
 class CanvasRenderer2d {
   // @todo round values before painting? research performance/visual impact of sub-pixel rendering - maybe make this optional
   constructor (name) {
+    this._ = 'renderer';
     this._name = name;
   }
 

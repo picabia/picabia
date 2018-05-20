@@ -4,12 +4,13 @@ import { Emitter } from '../core/emitter';
 class Viewport {
   // @todo do not round scaled values
   constructor (name, options, constraints) {
+    this._ = 'viewport';
     this._name = name;
     options = options || {};
     this._pos = options.pos || { x: 0, y: 0 };
     this._size = options.size || { w: 0, h: 0 };
-    this._angle = options.angle || 0;
     this._rotation = options.rotation || 0;
+    this._angle = options.angle || 0;
     this._scale = options.scale || 1;
     this._zoom = options.zoom || 1;
 
@@ -21,12 +22,12 @@ class Viewport {
     constraints.size = constraints.size || {};
     constraints.size.min = constraints.size.min || { w: 0, h: 0 };
     constraints.size.max = constraints.size.max || { w: Number.MAX_SAFE_INTEGER, h: Number.MAX_SAFE_INTEGER };
-    constraints.angle = constraints.angle || {};
-    constraints.angle.min = constraints.angle.min || -Math.PI * 2;
-    constraints.angle.max = constraints.angle.max || Math.PI * 2;
     constraints.rotation = constraints.rotation || {};
     constraints.rotation.min = constraints.rotation.min || -Math.PI * 2;
     constraints.rotation.max = constraints.rotation.max || Math.PI * 2;
+    constraints.angle = constraints.angle || {};
+    constraints.angle.min = constraints.angle.min || -Math.PI * 2;
+    constraints.angle.max = constraints.angle.max || Math.PI * 2;
     constraints.scale = constraints.scale || {};
     constraints.scale.min = constraints.scale.min || 0.1;
     constraints.scale.max = constraints.scale.max || 1000;
@@ -42,40 +43,22 @@ class Viewport {
     return this._name;
   }
 
-  get pos () {
-    return {
-      x: this._pos.x,
-      y: this._pos.y
-    };
-  }
-
-  get size () {
-    return {
-      w: this._size.w,
-      h: this._size.h
-    };
-  }
-
-  get angle () {
-    return this._angle;
-  }
-
-  get rotation () {
-    return this._rotation;
-  }
-
-  destroy () {
-    this._emitter.destroy();
-  }
-
-  // -- drawing api
-
   setPos (pos) {
+    if (Number.isNaN(pos.x) || Number.isNaN(pos.y)) {
+      throw new Error();
+    }
     this._pos = {
       x: Math.min(Math.max(pos.x, this._c.pos.min.x), this._c.pos.max.x),
       y: Math.min(Math.max(pos.y, this._c.pos.min.y), this._c.pos.max.y)
     };
     this._emitter.emit('change');
+  }
+
+  get pos () {
+    return {
+      x: this._pos.x,
+      y: this._pos.y
+    };
   }
 
   setSize (size) {
@@ -86,14 +69,35 @@ class Viewport {
     this._emitter.emit('change');
   }
 
+  get size () {
+    return {
+      w: this._size.w,
+      h: this._size.h
+    };
+  }
+
+  setRotation (rotation) {
+    if (Math.abs(rotation) >= Math.PI * 2) {
+      rotation %= (Math.PI * 2);
+    }
+    this._rotation = Math.min(Math.max(rotation, this._c.rotation.min), this._c.rotation.max);
+    this._emitter.emit('change');
+  }
+
+  get rotation () {
+    return this._rotation;
+  }
+
   setAngle (angle) {
+    if (Math.abs(angle) >= Math.PI * 2) {
+      angle %= (Math.PI * 2);
+    }
     this._angle = Math.min(Math.max(angle, this._c.angle.min), this._c.angle.max);
     this._emitter.emit('change');
   }
 
-  setRotation (rotation) {
-    this._rotation = Math.min(Math.max(rotation, this._c.rotation.min), this._c.rotation.max);
-    this._emitter.emit('change');
+  get angle () {
+    return this._angle;
   }
 
   setScale (scale) {
@@ -101,9 +105,17 @@ class Viewport {
     this._emitter.emit('change');
   }
 
+  get scale () {
+    return this._scale;
+  }
+
   setZoom (zoom) {
     this._zoom = Math.min(Math.max(zoom, this._c.zoom.min), this._c.zoom.max);
     this._emitter.emit('change');
+  }
+
+  get zoom () {
+    return this._zoom;
   }
 
   // @todo use Shapes.polygon
@@ -152,6 +164,10 @@ class Viewport {
   scalePoints (points) {
     // @todo use for instead of map
     return points.map((point) => this.scalePoint(point));
+  }
+
+  destroy () {
+    this._emitter.destroy();
   }
 }
 
