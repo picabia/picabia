@@ -1,3 +1,6 @@
+const FROZEN = {};
+Object.freeze(FROZEN);
+
 class Emitter {
   constructor () {
     this._listeners = {};
@@ -32,7 +35,7 @@ class Emitter {
   once (event, listenerFn, context) {
     const on = function () {
       this.off(event, on);
-      listenerFn.apply(context || this, arguments);
+      listenerFn.apply(context || FROZEN, arguments);
     };
     this.on(event, on);
     return this;
@@ -82,7 +85,7 @@ class Emitter {
       for (let ix = 0, len = eventListeners.length; ix < len; ++ix) {
         listenerFn = eventListeners[ix].fn;
         context = eventListeners[ix].context;
-        listenerFn.apply(context || this, args);
+        listenerFn.apply(context || FROZEN, args);
       }
     }
 
