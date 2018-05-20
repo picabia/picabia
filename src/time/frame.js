@@ -59,13 +59,13 @@ class Frame {
     const remainder = delta % maxUpdate;
     for (let ix = 0; ix < updates; ix++) {
       this._elapsed += maxUpdate;
-      this._emitter.emit('update', maxUpdate, this._elapsed);
+      this._emitter.emit('update', { d: maxUpdate, t: this._elapsed });
     }
     if (remainder || !updates) {
       this._elapsed += remainder;
-      this._emitter.emit('update', remainder, this._elapsed);
+      this._emitter.emit('update', { d: remainder, t: this._elapsed });
     }
-    this._emitter.emit('render', delta, this._elapsed);
+    this._emitter.emit('render', { d: delta, t: this._elapsed });
   }
 
   _animationFrame () {

@@ -2,7 +2,11 @@ class Model {
   constructor () {
     this._children = [];
     this._childIndex = 0;
-    this._timestamp = undefined;
+    this._time = {
+      i: undefined,
+      t: undefined,
+      d: undefined
+    };
   }
 
   _each (fn) {
@@ -21,14 +25,13 @@ class Model {
     return this._children.find(fn);
   }
 
-  _addChild (child, meta) {
-    meta = meta || {};
-    this._children.push({ obj: child, meta });
+  _addChild (child) {
+    this._children.push(child);
   }
 
   _removeChild (child) {
     for (let ix = 0; ix < this._children.length; ix++) {
-      if (this._children[ix].obj === child) {
+      if (this._children[ix] === child) {
         return this._children.splice(ix, 1);
       }
     }
@@ -39,40 +42,52 @@ class Model {
     child.destroy();
   }
 
-  _init () {}
+  _init (time) {
+    this._preInit();
+    for (let ix = 0; ix < this._children.length; ix++) {
+      this._children[ix]._init(time);
+    }
+    this._postInit();
+  }
+
+  // -- overridable
+
+  _preInit () {}
 
   _postInit () {}
 
-  _update () {}
+  _preUpdate () {}
 
   _postUpdate () {}
 
+  _destroy () {}
+
   // -- public
 
-  init (timestamp) {
-    this._init(timestamp);
-    for (let ix = 0; ix < this._children.length; ix++) {
-      this._children[ix].obj.init(timestamp);
-    }
-    this._postInit(timestamp);
-    this._timestamp = timestamp;
+  get time () {
+    return {
+      t: this._time.t || this._time.i,
+      d: this._time.d || 0
+    };
   }
 
-  update (delta, timestamp) {
-    if (this._timestamp === undefined) {
-      this.init(timestamp);
+  update (time) {
+    if (this._time.i === undefined) {
+      this._time.i = time.t;
+      this._init(time);
     }
-    this._update(delta, timestamp);
+    this._time.t = time.t;
+    this._time.d = time.d;
+    this._preUpdate();
     for (let ix = 0; ix < this._children.length; ix++) {
-      this._children[ix].obj.update(delta, timestamp);
+      this._children[ix].update(time);
     }
-    this._postUpdate(delta, timestamp);
+    this._postUpdate();
   }
 
   destroy () {
-    this._destroy();
     for (let ix = 0; ix < this._children.length; ix++) {
-      const child = this._children[ix].obj;
+      const child = this._children[ix];
       child.destroy();
       if (!child._destroyed) {
         console.error(child);
@@ -80,13 +95,14 @@ class Model {
       }
     }
     this._children.splice(0);
+    this._destroy();
     this._destroyed = true;
   }
 
   dump () {
     const _ = this._dump ? this._dump() : this;
     const __ = this._children.map((child) => {
-      return child.obj.dump ? child.obj.dump() : child.obj;
+      return child.dump ? child.dump() : child;
     });
     return { _, __ };
   }
