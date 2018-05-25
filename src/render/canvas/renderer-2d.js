@@ -1,8 +1,8 @@
 class CanvasRenderer2d {
   // @todo round values before painting? research performance/visual impact of sub-pixel rendering - maybe make this optional
-  constructor (name) {
+  constructor (id) {
     this._ = 'renderer';
-    this._name = name;
+    this._id = id;
   }
 
   _getRectPoints (x, y, w, h) {
@@ -15,8 +15,8 @@ class CanvasRenderer2d {
   }
 
   // -- api
-  get name () {
-    return this._name;
+  get id () {
+    return this._id;
   }
 
   setTarget (viewport, layer) {
@@ -69,6 +69,17 @@ class CanvasRenderer2d {
     this._ctx.stroke();
   }
 
+  arc (x, y, radius, startAngle, endAngle) {
+    const pos = this._viewport.scalePoint({
+      x,
+      y
+    });
+    radius = this._viewport.scaleValue(radius);
+    // startAngle = this._viewport.scaleAngle(startAngle);
+    // endAngle = this._viewport.scaleAngle(endAngle);
+    this._ctx.arc(pos.x, pos.y, radius, startAngle, endAngle);
+  }
+
   strokeRect (x, y, w, h) {
     // @todo optimize if viewport at 0, PI/2, PI, ...
     const points = this._getRectPoints(x, y, w, h);
@@ -109,6 +120,27 @@ class CanvasRenderer2d {
     this._ctx.lineTo(points[2].x, points[2].y);
     this._ctx.lineTo(points[3].x, points[3].y);
     this._ctx.fill();
+  }
+
+  setFont (font) {
+    this._ctx.font = font;
+  }
+
+  setTextAlign (align) {
+    this._ctx.textAlign = align;
+  }
+
+  setTextBaseline (baseline) {
+    this._ctx.textBaseline = baseline;
+  }
+
+  measureText (text) {
+    return this._ctx.measureText(text);
+  }
+
+  fillText (text, x, y) {
+    const point = this._viewport.scalePoint({ x, y });
+    this._ctx.fillText(text, point.x, point.y);
   }
 }
 

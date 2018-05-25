@@ -28,9 +28,9 @@ const reducers = {
 };
 
 class Camera {
-  constructor (name) {
+  constructor (id) {
     this._ = 'camera';
-    this._name = name;
+    this._id = id;
 
     this._controls = [];
     this._controlIndex = {};
@@ -53,9 +53,9 @@ class Camera {
   _indexViewports (viewports, control) {
     for (let ix = 0; ix < viewports.length; ix++) {
       const viewport = viewports[ix];
-      this._viewports[viewport.name] = this._viewports[viewport.name] || { viewport, controls: {} };
-      this._viewports[viewport.name].controls[control.type] = this._viewports[viewport.name].controls[control.type] || [];
-      this._viewports[viewport.name].controls[control.type].push(control);
+      this._viewports[viewport.id] = this._viewports[viewport.id] || { viewport, controls: {} };
+      this._viewports[viewport.id].controls[control.type] = this._viewports[viewport.id].controls[control.type] || [];
+      this._viewports[viewport.id].controls[control.type].push(control);
     }
   }
 
@@ -82,15 +82,15 @@ class Camera {
   }
 
   _updateViewports (changedControls) {
-    for (let name in this._viewports) {
-      const viewport = this._viewports[name].viewport;
-      const controlsByType = this._viewports[name].controls;
+    for (let id in this._viewports) {
+      const viewport = this._viewports[id].viewport;
+      const controlsByType = this._viewports[id].controls;
       this._updateViewport(changedControls, viewport, controlsByType);
     }
   }
 
-  get name () {
-    return this._name;
+  get id () {
+    return this._id;
   }
 
   addPosControl (name, viewports, control) {

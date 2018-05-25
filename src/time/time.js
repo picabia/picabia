@@ -1,3 +1,6 @@
+const FROZEN = {};
+Object.freeze(FROZEN);
+
 const throttle = (func, limit) => {
   let timeout;
   let ts;
@@ -19,28 +22,27 @@ const throttle = (func, limit) => {
   };
 };
 
-const throttleAF = (fn, ms, ctx) => {
-  let ts;
-  return (delta, timestamp) => {
-    if (!ts || (timestamp - ts) >= ms) {
+const repeat = (now, ms, fn, context) => {
+  return (time) => {
+    if (!now || (time.t - now) >= ms) {
       fn(...arguments);
-      ts = timestamp;
+      now = time.t;
     }
   };
 };
 
-const run = (now, wait) => {
-  return (timestamp, fn) => {
-    if (timestamp > now + wait) {
-      fn();
+const run = (now, wait, fn, context) => {
+  return (time) => {
+    if (time.t > now + wait) {
+      fn.apply(context || FROZEN, arguments);
     }
   };
 };
 
 const Time = {
-  run,
   throttle,
-  throttleAF
+  repeat,
+  run
 };
 
 export {

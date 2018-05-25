@@ -17,9 +17,9 @@ const BLOCK = 'block';
 const MAX_PIXELS = 800 * 600;
 
 class Container {
-  constructor (name, dom, options) {
+  constructor (id, dom, options) {
     this._ = 'container';
-    this._name = name;
+    this._id = id;
     this._dom = dom;
     options = options || {};
     this._ratio = options.ratio || 4 / 3;
@@ -159,8 +159,8 @@ class Container {
 
   // -- api
 
-  get name () {
-    return this._name;
+  get id () {
+    return this._id;
   }
 
   get size () {

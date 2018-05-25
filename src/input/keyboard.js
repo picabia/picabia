@@ -66,7 +66,7 @@ class KeyboardInput {
     }
   }
 
-  // -- public
+  // -- api
 
   addGroup (group, map, idle) {
     this._groups.push(group);

@@ -85,7 +85,7 @@ class Frame {
     }, this._config.intervalMs);
   }
 
-  // -- public
+  // -- api
 
   start () {
     this._resume();

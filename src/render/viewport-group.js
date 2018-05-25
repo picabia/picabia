@@ -1,6 +1,12 @@
 class ViewportGroup {
-  constructor (viewports) {
+  constructor (id, viewports) {
+    this._ = 'viewport-group';
+    this._id = id;
     this._viewports = viewports;
+  }
+
+  get id () {
+    return this._id;
   }
 
   setSize (size) {

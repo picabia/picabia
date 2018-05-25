@@ -6,22 +6,23 @@ const ABSOLUTE = 'absolute';
 const PX = 'px';
 
 class CanvasLayer2d {
-  constructor (name, container, options) {
+  constructor (id, container, options) {
     this._ = 'layer';
-    this._name = name;
+    this._id = id;
 
     options = options || {};
-    this._autoResize = 'autoResize' in options || true;
-    this._autoClear = 'autoClear' in options || true;
+    this._autoResize = 'autoResize' in options ? options.autoResize : true;
+    this._autoClear = 'autoClear' in options ? options.autoClear : true;
     this._pos = options.position || { x: 0, y: 0 };
+    this._size = options.size || { w: 0, h: 0 };
     this._zIndex = options.zIndex;
 
-    this._size = null;
-    this._requiresResize = false;
+    this._currentSize = { w: 0, h: 0 };
+    this._requiresResize = true;
 
     this._element = document.createElement(CANVAS);
     this._element.classList.add(CLASS_NAME);
-    this._element.setAttribute(DATA_NAME, this._name);
+    this._element.setAttribute(DATA_NAME, this._id);
     this._ctx = this._element.getContext('2d');
 
     if (container) {
@@ -48,11 +49,12 @@ class CanvasLayer2d {
   }
 
   _resize () {
-    this._size = this._container.size;
+    const size = this._autoResize ? this._container.size : this._size;
+    this._currentSize = size;
     let position = this._pos || { x: 0, y: 0 };
     let zIndex = this._zIndex;
-    this._element.width = this._size.w;
-    this._element.height = this._size.h;
+    this._element.width = size.w;
+    this._element.height = size.h;
     this._element.style.position = ABSOLUTE;
     this._element.style.left = position.x + PX;
     this._element.style.top = position.y + PX;
@@ -65,11 +67,11 @@ class CanvasLayer2d {
   // -- api
 
   get size () {
-    return this._size;
+    return this._currentSize;
   }
 
-  get name () {
-    return this._name;
+  get id () {
+    return this._id;
   }
 
   get zIndex () {
@@ -88,12 +90,9 @@ class CanvasLayer2d {
     this._setContainer(container);
   }
 
-  setName (name) {
-    this._element.setAttribute(DATA_NAME, this._name);
-  }
-
-  setIndex (name) {
-    this._element.setAttribute(DATA_NAME, this._name);
+  setIndex (zIndex) {
+    this._zIndex = zIndex;
+    this._element.style.zIndex = zIndex;
   }
 
   // - view manager
@@ -104,7 +103,7 @@ class CanvasLayer2d {
       this._requiresResize = false;
     }
     if (this._autoClear) {
-      this._ctx.clearRect(0, 0, this._size.w, this._size.h);
+      this._ctx.clearRect(0, 0, this._currentSize.w, this._currentSize.h);
     }
   }
 

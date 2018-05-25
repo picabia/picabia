@@ -3,9 +3,9 @@ import { Emitter } from '../core/emitter';
 
 class Viewport {
   // @todo do not round scaled values
-  constructor (name, options, constraints) {
+  constructor (id, options, constraints) {
     this._ = 'viewport';
-    this._name = name;
+    this._id = id;
     options = options || {};
     this._pos = options.pos || { x: 0, y: 0 };
     this._size = options.size || { w: 0, h: 0 };
@@ -39,8 +39,8 @@ class Viewport {
     Emitter.mixin(this, this._emitter);
   }
 
-  get name () {
-    return this._name;
+  get id () {
+    return this._id;
   }
 
   setPos (pos) {
@@ -164,6 +164,10 @@ class Viewport {
   scalePoints (points) {
     // @todo use for instead of map
     return points.map((point) => this.scalePoint(point));
+  }
+
+  scaleAngle (angle) {
+    return angle - this._angle - this._rotation;
   }
 
   destroy () {
