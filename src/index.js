@@ -40,4 +40,5 @@ export { TileSet } from './texture/tile-set';
 
 export { Frame } from './time/frame';
 export { Time } from './time/time';
+export { Ramp } from './time/ramp';
 export { Wave } from './time/wave';
