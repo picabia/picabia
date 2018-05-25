@@ -84,7 +84,7 @@ class ViewEngine {
       obj = this._objects[id];
     } else {
       obj = id;
-      id = obj && `${obj._}:${obj.name}`;
+      id = obj && `${obj._}:${obj.id}`;
     }
     if (obj) {
       const index = this._collections[obj._].indexOf(obj);
@@ -180,10 +180,10 @@ class ViewEngine {
         }
       }
     }
-    const roots = this._childViews;
-    if (objects.length + roots.length) {
-      console.log(objects, roots);
-      throw new Error(`Not clean, contains ${objects.length} objects and ${roots.length} roots`);
+    const childViews = this._childViews;
+    if (objects.length + childViews.length) {
+      console.log(objects, childViews);
+      throw new Error(`Not clean, contains ${objects.length} objects and ${childViews.length} child views`);
     }
   }
 
