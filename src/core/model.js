@@ -1,7 +1,6 @@
 class Model {
   constructor () {
     this._children = [];
-    this._childIndex = 0;
     this._time = {
       i: undefined,
       t: undefined,
@@ -62,7 +61,7 @@ class Model {
 
   _destroy () {}
 
-  // -- public
+  // -- api
 
   get time () {
     return {
