@@ -26,7 +26,7 @@ const getAABBRect = (points) => {
     y: points[0].y
   };
   for (let ix = 1; ix < length; ix++) {
-    var point = points[ix];
+    const point = points[ix];
     if (point.x < min.x) {
       min.x = point.x;
     } else if (point.x > max.x) {

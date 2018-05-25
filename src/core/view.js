@@ -94,9 +94,11 @@ class View {
         target.zIndex = this._zIndex + (1 + this._childIndex) / 1000;
       }
       child = new Constructor(this._v, target, ...args);
-      this._v.addView(child);
     } else {
       child = new Constructor(this._v, ...args);
+    }
+    if (child.render) {
+      this._v.addView(child);
     }
     this._addChild(child);
     return child;

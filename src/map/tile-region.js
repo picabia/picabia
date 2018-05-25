@@ -1,8 +1,8 @@
 
 const textureDistribution = (textures) => {
   const ret = [];
-  for (var ix = 0; ix < textures.length; ix++) {
-    for (var ox = 0; ox < textures[ix].weight; ox++) {
+  for (let ix = 0; ix < textures.length; ix++) {
+    for (let ox = 0; ox < textures[ix].weight; ox++) {
       ret.push(textures[ix].type);
     }
   }
@@ -30,7 +30,7 @@ const populateMatrix = (tiles, pos, distribution) => {
 
 const fromSize = (size) => {
   const tiles = [];
-  for (var ix = 0; ix < size.w; ix++) {
+  for (let ix = 0; ix < size.w; ix++) {
     tiles.push(new Array(size.h));
   }
   return tiles;

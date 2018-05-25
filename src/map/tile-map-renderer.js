@@ -151,7 +151,7 @@ class TileMapPreRenderer {
     this._ctx.clearRect(0, 0, this._ctx.canvas.width, this._ctx.canvas.height);
 
     for (let x = 0; x < this._tiles[2]; x++) {
-      for (var y = 0; y < this._tiles[3]; y++) {
+      for (let y = 0; y < this._tiles[3]; y++) {
         let tile = this._tileMap.getTileAt({ x: x + this._tiles[0], y: y + this._tiles[1] });
         if (tile) {
           this._drawAt(x, y, tile);
