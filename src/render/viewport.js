@@ -170,6 +170,10 @@ class Viewport {
     return angle - this._angle - this._rotation;
   }
 
+  scaleText (pixels) {
+    return this.scaleValue(pixels);
+  }
+
   destroy () {
     this._emitter.destroy();
   }

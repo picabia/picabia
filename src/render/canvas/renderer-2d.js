@@ -122,8 +122,8 @@ class CanvasRenderer2d {
     this._ctx.fill();
   }
 
-  setFont (font) {
-    this._ctx.font = font;
+  setFont (pixels, font) {
+    this._ctx.font = this._viewport.scaleText(pixels) + 'px ' + (font || '');
   }
 
   setTextAlign (align) {
